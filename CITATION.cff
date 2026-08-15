@@ -7,6 +7,9 @@ authors:
     family-names: "Galal"
     email: "mostafam.galal82@gmail.com"
     affiliation: "Department of Computer and Systems Engineering, Alexandria University"
+    orcid: "https://orcid.org/0009-0005-5852-0943"
+version: "1.0.0"
+date-released: "2026-08-15"
 license: MIT
 repository-code: "https://github.com/MostafaGalal1/agriedge"
 keywords:
