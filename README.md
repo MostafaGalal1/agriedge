@@ -1,7 +1,7 @@
 # AgriEdge
 
-[![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21941210.svg)](https://doi.org/10.5281/zenodo.21941210)
-[![Dataset DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21941319.svg)](https://doi.org/10.5281/zenodo.21941319)
+[![Code DOI](https://img.shields.io/badge/Code%20DOI-10.5281%2Fzenodo.21941210-1682D4)](https://doi.org/10.5281/zenodo.21941210)
+[![Dataset DOI](https://img.shields.io/badge/Dataset%20DOI-10.5281%2Fzenodo.21941319-1682D4)](https://doi.org/10.5281/zenodo.21941319)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Audit tooling and a leakage-free precision-agriculture benchmark for the
