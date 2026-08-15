@@ -1111,18 +1111,30 @@ PyTorch's Metal backend, training in under a minute each. No experiment
 required datacentre hardware.
 
 \paragraph{Provenance of the audited copy} Because this paper makes a claim
-about a distribution rather than about a model, the copy matters. We audited
-the Edge-IIoTset release whose \code{Readme.txt}, documentation PDF and CSV
-files all carry the authors' 18~March 2022 timestamps, comprising ten
-normal-traffic device directories and fourteen attack captures. Its structure
-matches the description in the dataset paper: 61 protocol features alongside
-\code{Attack\_label} and \code{Attack\_type}. Two observations argue that the
-artifact is not an accident of repackaging by a particular mirror. First, it is
-present in the authors' own per-device raw captures, not only in the merged
-curated subsets---the normal-traffic captures write the placeholder as
-\code{0} and the attack captures write it as \code{0.0}---and a mirror that
-re-archives a download does not regenerate two dozen per-device CSVs. Second,
-the artifact is visible in the raw CSV text, independent of any parsing library.
+about a distribution rather than about a model, the copy matters. Edge-IIoTset
+is published on IEEE DataPort, submitted by the lead author on 18~January
+2022 and gated behind a subscription \cite{ferrag2022dataport}. The DataPort
+record itself, however, instructs readers to retrieve the data from a Kaggle
+repository under that same author's account, and gives the retrieval path
+verbatim as \code{Edge-IIoTset dataset/} \code{Selected dataset for ML and
+DL/}\code{DNN-EdgeIIoT-dataset.csv}. The free channel is therefore
+author-sanctioned rather than a third-party re-upload, it serves the same
+release as the subscription channel, and---being free---it is what the
+community in practice trains on. The copy audited here was obtained through
+it, at exactly that path.
+
+Three further observations argue that the artifact is not an accident of
+repackaging. The copy's \code{Readme.txt}, documentation PDF and CSV files all
+carry the authors' 18~March 2022 timestamps, across ten normal-traffic device
+directories and fourteen attack captures, and its structure matches the
+description in the dataset paper: 61 protocol features alongside
+\code{Attack\_label} and \code{Attack\_type}. The artifact is present in the
+authors' own per-device raw captures, not only in the merged curated
+subsets---the normal-traffic captures write the placeholder as \code{0} and
+the attack captures write it as \code{0.0}---and a mirror that re-archives a
+download does not regenerate two dozen per-device CSVs. And it is visible in
+the raw CSV text, independent of any parsing library.
+
 We nonetheless encourage readers to verify against their own copy. The
 repository includes a dependency-free script that does so in one command,
 reading every field as text so that no type inference can mask the difference:
