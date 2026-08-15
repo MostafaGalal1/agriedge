@@ -184,6 +184,34 @@ benchmarking~\cite{bridge2026tchnet} and dataset-centric evaluation of
 federated intrusion detection~\cite{screports2026federated} points in the same
 direction.
 
+\paragraph{Benchmark integrity as a research programme} A distinct line of work
+audits intrusion detection benchmarks directly rather than proposing models for
+them. Engelen et al.~\cite{engelen2021cicids} reverse-engineer CICIDS2017 and
+find labelling and traffic-generation faults severe enough to change reported
+conclusions. Flood et al.~\cite{flood2024designsmells} generalise this into a
+catalogue of six recurring \emph{data design smells} obtained by manual
+analysis of seven highly-cited benchmark datasets, among them \emph{wrong
+label}, \emph{traffic collapse} and---closest to our finding---\emph{highly
+dependent features}, where distinct features carry near-identical information
+about the label. Arp et al.~\cite{arp2022dosdonts} survey thirty top-tier
+security papers and codify the recurring methodological pitfalls of
+learning-based security, spurious correlation among them.
+
+This paper sits inside that programme rather than alongside it, and two things
+distinguish its contribution. First, Edge-IIoTset is not among the seven
+datasets Flood et al. examine, and we are not aware of any comparable audit of
+it; the catalogue therefore does not yet cover the dataset that IIoT and
+agricultural work overwhelmingly relies on. Second, the mechanism differs in
+kind. The dependent features documented in that literature are genuine network
+properties---destination port, packet size, flow duration---that happen to
+correlate with the label because of how traffic was generated. The columns we
+identify are not network properties at all under the values that carry the
+signal: the discriminating token is the placeholder written where a protocol
+field was \emph{absent}, and its spelling records which file the row was parsed
+from. The dependency is thus perfect rather than merely strong, and it is
+invisible to any inspection that casts the column to a numeric type before
+looking at it.
+
 Two results are closer still to ours. Bouke and
 Abdullah~\cite{bouke2023patternleakage} study \emph{pattern leakage} introduced
 during preprocessing rather than present in the raw capture, and show
@@ -196,13 +224,19 @@ sweep exhibits at a layer boundary (Section~\ref{sec:lodo}). Neither reports a
 label-recovering artifact in Edge-IIoTset, and to our knowledge no published
 work does.
 
-\paragraph{Our position relative to this work} The sceptical literature has
-established \emph{that} generalisation fails and \emph{that} leakage is
-suspected. It has not, to our knowledge, localised a specific leakage mechanism
-in a specific widely-used dataset and quantified its contribution. That is the
-gap this paper fills. Our finding is complementary to Hakim et al.'s: they show
-models learn shortcuts that fail to transfer; we show that for Edge-IIoTset
-under its own documented recipe, the shortcut is not even a network feature.
+\paragraph{Our position relative to this work} Two literatures meet here. The
+IIoT-specific sceptical work has established \emph{that} generalisation fails
+and \emph{that} leakage is suspected, without localising a mechanism. The
+benchmark-integrity work has localised mechanisms precisely, but in the
+classical network-intrusion datasets rather than in Edge-IIoTset. This paper
+joins the two: it applies the auditing stance of the latter to the dataset the
+former is built on, and finds a mechanism that is both stronger than the
+dependencies previously catalogued---it recovers the label alone, at accuracy
+$1.0000$---and different in kind, since the discriminating value encodes file
+provenance rather than any property of the traffic. Our finding is
+complementary to Hakim et al.'s: they show models learn shortcuts that fail to
+transfer; we show that for Edge-IIoTset under its own documented recipe, the
+shortcut is not a network feature at all.
 
 \paragraph{Federated learning for agricultural IIoT} Federated approaches have
 been proposed specifically for agricultural intrusion detection, including
