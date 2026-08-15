@@ -1,0 +1,28 @@
+Edge-IIoTset is the reference benchmark for machine-learning intrusion
+detection in the industrial IoT, and the literature built on it reports
+accuracies above 99%. Much of that performance is not intrusion detection. The
+preprocessing recipe distributed with the dataset instructs researchers to
+one-hot encode seven categorical columns. Four of them recover
+the attack/normal label with an accuracy of 1.0000 on their own, through
+nothing but the spelling of the placeholder written for an absent protocol
+field: normal-traffic and attack captures were parsed separately, so one
+branch wrote '0' and the other '0.0'. The label is thus recoverable from a
+serialisation artifact encoding file provenance, with no network behaviour
+modelled. It separates every row of both curated subsets (157,800 and
+2,219,201). Under 5-fold x 3-repeat cross-validation all six standard
+classifiers, plus an MLP and a 1D-CNN, attain 1.0000 +/- 0.0000 accuracy in
+all fifteen folds - including Gaussian naive Bayes, far too weak to solve the
+task genuinely. Under a corrected protocol naive Bayes falls by 0.3005
+macro-F1 and the best model settles at 0.9503. The leak is encoding-agnostic:
+label, ordinal and frequency encoding all give the same result.
+
+The curated subsets also cannot support agricultural work: Modbus is
+effectively absent and device identity stripped. We rebuild from the raw
+captures under uniform parsing, producing AgriEdge: 1,276,122 rows over five
+devices with full attribution and no column separating the classes above
+0.0288. A leave-one-device-out sweep locates the failure boundary: transfer
+between perception sensors is nearly free, but collapses across the
+perception/actuation layer, with random forest falling from 0.9988 to 0.5083
+when the Modbus gateway is withheld. Non-IID federated partitioning costs at
+most 0.0037 macro-F1, while the LoRaWAN uplink to train a 28,450-parameter
+model costs 4.6 hours. Code is released.

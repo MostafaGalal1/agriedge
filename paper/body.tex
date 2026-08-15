@@ -184,6 +184,18 @@ benchmarking~\cite{bridge2026tchnet} and dataset-centric evaluation of
 federated intrusion detection~\cite{screports2026federated} points in the same
 direction.
 
+Two results are closer still to ours. Bouke and
+Abdullah~\cite{bouke2023patternleakage} study \emph{pattern leakage} introduced
+during preprocessing rather than present in the raw capture, and show
+empirically that it inflates reported reliability---establishing the general
+phenomenon that this paper instantiates in a specific dataset with a specific
+mechanism. Kostas et al.~\cite{kostas2024packetfeatures} show that
+individual-packet features let models memorise artifacts that do not survive
+transfer to another network, which is the failure mode our leave-one-device-out
+sweep exhibits at a layer boundary (Section~\ref{sec:lodo}). Neither reports a
+label-recovering artifact in Edge-IIoTset, and to our knowledge no published
+work does.
+
 \paragraph{Our position relative to this work} The sceptical literature has
 established \emph{that} generalisation fails and \emph{that} leakage is
 suspected. It has not, to our knowledge, localised a specific leakage mechanism
@@ -1097,6 +1109,28 @@ All randomness is seeded. Every experiment reported here ran on a 12-core Apple
 M4~Pro with 25~GB of memory; the deep baselines used the integrated GPU through
 PyTorch's Metal backend, training in under a minute each. No experiment
 required datacentre hardware.
+
+\paragraph{Provenance of the audited copy} Because this paper makes a claim
+about a distribution rather than about a model, the copy matters. We audited
+the Edge-IIoTset release whose \code{Readme.txt}, documentation PDF and CSV
+files all carry the authors' 18~March 2022 timestamps, comprising ten
+normal-traffic device directories and fourteen attack captures. Its structure
+matches the description in the dataset paper: 61 protocol features alongside
+\code{Attack\_label} and \code{Attack\_type}. Two observations argue that the
+artifact is not an accident of repackaging by a particular mirror. First, it is
+present in the authors' own per-device raw captures, not only in the merged
+curated subsets---the normal-traffic captures write the placeholder as
+\code{0} and the attack captures write it as \code{0.0}---and a mirror that
+re-archives a download does not regenerate two dozen per-device CSVs. Second,
+the artifact is visible in the raw CSV text, independent of any parsing library.
+We nonetheless encourage readers to verify against their own copy. The
+repository includes a dependency-free script that does so in one command,
+reading every field as text so that no type inference can mask the difference:
+
+\begin{verbatim}
+python scripts/verify_placeholder_split.py \
+       ML-EdgeIIoT-dataset.csv
+\end{verbatim}
 
 The audit reduces to a single call for readers who wish to check their own
 pipelines:
