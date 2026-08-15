@@ -17,7 +17,7 @@ Edge-IIoTset dataset/
 
 # The built benchmark is 37 MB and fully regenerable:
 #     python experiments/03_build_agribench.py
-# It is published as a Zenodo artifact rather than carried in git.
+# It is archived at doi:10.5281/zenodo.21941319 rather than carried in git.
 results/*.parquet
 
 # arXiv submission package (regenerate with: cd paper && make arxiv)

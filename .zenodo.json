@@ -27,6 +27,12 @@
   ],
   "related_identifiers": [
     {
+      "identifier": "10.5281/zenodo.21941319",
+      "relation": "isSupplementedBy",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    },
+    {
       "identifier": "10.21227/mbc1-1h68",
       "relation": "references",
       "scheme": "doi",
