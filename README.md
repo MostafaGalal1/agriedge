@@ -1,5 +1,8 @@
 # AgriEdge
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21941210.svg)](https://doi.org/10.5281/zenodo.21941210)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Audit tooling and a leakage-free precision-agriculture benchmark for the
 Edge-IIoTset dataset.
 
@@ -156,6 +159,15 @@ All randomness is seeded (`RANDOM_SEED = 20260814`). Every result in the paper
 was produced on a 12-core Apple M4 Pro with 25 GB of memory; the deep baselines
 used the integrated GPU via PyTorch's Metal backend and trained in under a
 minute each. No experiment requires datacentre hardware.
+
+## Citing this work
+
+The archived release has a DOI. Cite `10.5281/zenodo.21941210` — the concept
+DOI, which always resolves to the newest version. To pin this exact release
+instead, use `10.5281/zenodo.21941211`.
+
+GitHub renders a formatted citation from [`CITATION.cff`](CITATION.cff) under
+*Cite this repository* in the sidebar.
 
 ## Citing the dataset
 

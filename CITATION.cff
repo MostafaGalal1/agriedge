@@ -10,6 +10,11 @@ authors:
     orcid: "https://orcid.org/0009-0005-5852-0943"
 version: "1.0.0"
 date-released: "2026-08-15"
+doi: "10.5281/zenodo.21941210"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21941211"
+    description: "Archived snapshot of version 1.0.0"
 license: MIT
 repository-code: "https://github.com/MostafaGalal1/agriedge"
 keywords:
