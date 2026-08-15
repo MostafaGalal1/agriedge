@@ -129,9 +129,10 @@ paper/build_html.py        Markdown -> self-contained HTML preview
 cd paper && make
 ```
 
-That produces both versions: `manuscript.pdf` (Elsevier, 26 pages) and
+That produces both versions: `manuscript.pdf` (Elsevier, 27 pages) and
 `manuscript-ieee.pdf` (IEEE, 11 pages). `make elsevier` and `make ieee` build
 one at a time; `make html` regenerates the HTML preview from `manuscript.md`.
+`make arxiv` packages the Elsevier version for arXiv submission.
 
 The two `.tex` files are thin class wrappers over the same `body.tex`,
 `abstract.tex` and `preamble-common.tex`, so they cannot drift apart. **Edit

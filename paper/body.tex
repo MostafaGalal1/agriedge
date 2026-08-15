@@ -104,7 +104,7 @@ models whose random-split accuracies are indistinguishable
 
 \item \textbf{We release the complete pipeline}---audit tooling, benchmark
 construction, and experiments---so that the audit can be applied to other
-datasets (Section~\ref{sec:repro}).
+datasets (Section~\ref{sec:repro}).\footnote{\url{https://github.com/MostafaGalal1/agriedge}}
 \end{enumerate}
 
 \section{Background}
@@ -1083,7 +1083,8 @@ descriptive of spread rather than as frequentist guarantees.
 \section{Reproducibility}
 \label{sec:repro}
 
-All code is released as the \code{agriedge} Python package: \code{audit.leakage}
+All code is released under the MIT licence as the \code{agriedge} Python
+package, at \url{https://github.com/MostafaGalal1/agriedge}: \code{audit.leakage}
 (separation rate, single-column accuracy, NMI, provenance probe),
 \code{data.placeholders} (canonicalisation), \code{data.recipes} (both
 protocols), \code{data.agribench} (benchmark construction under uniform
@@ -1192,7 +1193,11 @@ representative. We suspect the latter.
 Edge-IIoTset is publicly available and free for academic use per its own
 licence~\cite{ferrag2022edgeiiotset}. The \code{agriedge} package, the AgriEdge
 benchmark construction pipeline, and all experiment scripts and result tables
-are released with this paper.
+are released under the MIT licence at
+\url{https://github.com/MostafaGalal1/agriedge}. The constructed benchmark
+itself is not carried in the repository---it is 37~MB and fully
+regenerable by running \code{experiments/03\_build\_agribench.py} against a
+local copy of Edge-IIoTset.
 
 \section*{Declaration of competing interest}
 

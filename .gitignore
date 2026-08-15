@@ -20,6 +20,10 @@ Edge-IIoTset dataset/
 # It is published as a Zenodo artifact rather than carried in git.
 results/*.parquet
 
+# arXiv submission package (regenerate with: cd paper && make arxiv)
+paper/arxiv.tar.gz
+paper/arxiv-build/
+
 # LaTeX build intermediates. The PDFs themselves are tracked.
 paper/*.aux
 paper/*.bbl
