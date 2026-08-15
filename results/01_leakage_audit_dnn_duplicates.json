@@ -1,0 +1,8 @@
+{
+  "n_rows": 2219201.0,
+  "exact_duplicate_rows": 815.0,
+  "exact_duplicate_rate": 0.00036724929377735503,
+  "feature_duplicate_rows": 815.0,
+  "feature_duplicate_rate": 0.00036724929377735503,
+  "contradictory_duplicate_rows": 0.0
+}

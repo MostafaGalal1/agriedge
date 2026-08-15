@@ -1,0 +1,8 @@
+column,tokens,pure_normal_tokens,pure_attack_tokens,rows_separated,separation_rate,single_column_accuracy,nmi_with_label,provenance_marker
+dns.qry.name.len,8,6,2,157800,1.0,1.0,0.9858953380981137,True
+mqtt.conack.flags,3,2,1,157800,1.0,1.0,0.9641609944122301,True
+mqtt.protoname,3,2,1,157800,1.0,1.0,0.9649366501760295,True
+mqtt.topic,3,2,1,157800,1.0,1.0,0.9650167690596134,True
+http.request.version,8,0,7,62472,0.395893536121673,0.8460076045627376,0.13784677243111393,False
+http.request.method,6,0,5,61258,0.3882002534854246,0.8460076045627376,0.1348070181733793,False
+http.referer,4,0,3,30689,0.19448035487959442,0.8460076045627376,0.07831382231001392,False

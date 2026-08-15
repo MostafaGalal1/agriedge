@@ -1,0 +1,54 @@
+%% Provenance, Not Behaviour --- Elsevier (elsarticle) submission source.
+%%
+%% Compile:  tectonic -X compile manuscript.tex      (or: make)
+%%
+%% This file is a thin class wrapper. The prose lives in body.tex and
+%% abstract.tex, which manuscript-ieee.tex also inputs, so the two versions
+%% cannot drift apart. Edit the content there, not here.
+
+\documentclass[preprint,11pt]{elsarticle}
+
+\input{preamble-common}
+
+\usepackage[hidelinks]{hyperref}   % load late
+
+% Single column: every table gets the same float treatment, and \fittable
+% shrinks only the ones that actually overflow.
+\newenvironment{wtable}{\begin{table}[htbp]}{\end{table}}
+\newenvironment{ntable}{\begin{table}[htbp]}{\end{table}}
+
+\journal{Computers and Electronics in Agriculture}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Provenance, Not Behaviour: A Serialisation Artifact in Edge-IIoTset and
+a Leakage-Free Benchmark for Precision-Agriculture Intrusion Detection}
+
+\author[inst1]{Mostafa M. Galal}
+\ead{mostafam.galal82@gmail.com}
+
+\affiliation[inst1]{organization={Department of Computer and Systems
+                                  Engineering, Alexandria University},
+                    city={Alexandria},
+                    country={Egypt}}
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\begin{keyword}
+intrusion detection \sep industrial IoT \sep precision agriculture \sep
+data leakage \sep benchmark integrity \sep federated learning \sep
+edge computing \sep Edge-IIoTset
+\end{keyword}
+
+\end{frontmatter}
+
+\input{body}
+
+\bibliographystyle{elsarticle-num}
+\bibliography{refs}
+
+\end{document}

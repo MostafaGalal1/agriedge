@@ -1,0 +1,8 @@
+column,'0' normal,'0' attack,'0.0' normal,'0.0' attack,provenance_marker
+http.request.method,0,54062,24301,72241,False
+http.referer,0,30399,24301,102810,False
+http.request.version,0,55276,24301,71027,False
+dns.qry.name.len,24272,0,0,133272,True
+mqtt.conack.flags,23012,0,0,133499,True
+mqtt.protoname,23051,0,0,133499,True
+mqtt.topic,23055,0,0,133499,True

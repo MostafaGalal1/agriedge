@@ -1,0 +1,49 @@
+%% Packages and macros shared by both class wrappers.
+%%
+%% Nothing class-specific belongs here. The wrappers load their own document
+%% class first, then \input this file, then bind the \wtable / \ntable float
+%% environments to whatever suits their column layout.
+
+%% Fonts are deliberately NOT set here. Tectonic is XeTeX, so UTF-8 input needs
+%% no inputenc, and the two classes want different faces: elsarticle preprints
+%% are conventionally Latin Modern, while IEEE requires Times. Each wrapper
+%% makes its own choice.
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{makecell}   % stacked table headers
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{microtype}  % better line breaking; fewer overfull lines
+\usepackage{adjustbox}
+
+% Several results tables carry more numeric columns than the measure holds.
+% \fittable shrinks only those that actually overflow and leaves the rest at
+% full size, so no table is dropped or relegated to an appendix to make it fit
+% --- every number stays on the page it argues from. Measuring against
+% \linewidth rather than \textwidth is what makes this work in both layouts:
+% inside a full-width float it resolves to the text width, inside a
+% single-column float to the column width.
+\newenvironment{fittable}
+  {\begin{adjustbox}{max width=\linewidth}}
+  {\end{adjustbox}}
+
+% Numeric tables are dense; buy back horizontal room before any scaling.
+\setlength{\tabcolsep}{5pt}
+
+% Stacked headers are centred; the default \makecell alignment fights the
+% right-aligned numeric columns underneath, so pin it explicitly.
+\renewcommand{\cellalign}{cc}
+
+% Protocol field names and token literals appear constantly; give them one
+% consistent treatment so evidence is always visually distinct from prose.
+% Note the deliberate absence of hyphenation inside \code: this paper's
+% argument turns on exact token spellings, and a break-hyphen inserted into
+% mqtt.protoname would be indistinguishable from part of the identifier.
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+% Long dotted identifiers are unbreakable words, so a few lines cannot be set
+% at natural spacing. Let TeX loosen interword space as a last resort rather
+% than overflowing the measure.
+\emergencystretch=3em

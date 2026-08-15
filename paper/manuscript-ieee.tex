@@ -1,0 +1,82 @@
+%% Provenance, Not Behaviour --- IEEE (IEEEtran) submission source.
+%% Targets IEEE Internet of Things Journal and sibling IEEE journals.
+%%
+%% Compile:  tectonic -X compile manuscript-ieee.tex   (or: make ieee)
+%%
+%% This file is a thin class wrapper. The prose lives in body.tex and
+%% abstract.tex, which manuscript.tex also inputs, so the two versions cannot
+%% drift apart. Edit the content there, not here.
+
+\documentclass[journal]{IEEEtran}
+
+% IEEE requires Times. IEEEtran asks for `ptm', which bare XeTeX cannot
+% resolve, so load TeX Gyre Termes --- the metric-compatible Times clone ---
+% explicitly for both text and math.
+%
+% Building this file emits a handful of "Font shape `TU/ptm/...' undefined"
+% warnings during class loading. They are harmless: they come from IEEEtran.cls
+% declaring its own defaults before this preamble runs, and \setmainfont wins
+% afterwards. Verify with `pdffonts manuscript-ieee.pdf` --- the embedded faces
+% should all be TeXGyreTermes.
+\usepackage{fontspec}
+\setmainfont{texgyretermes}[
+  Extension      = .otf,
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic ]
+
+\input{preamble-common}
+
+% unicode-math must follow amsmath (loaded in preamble-common). Without it the
+% text sets in Times while every digit inside $...$ sets in Computer Modern,
+% which is conspicuous in tables built from figures like $1.0000 \pm 0.0000$.
+\usepackage{unicode-math}
+\setmathfont{texgyretermes-math.otf}
+
+\usepackage{stfloats}              % permit full-width floats at page bottoms
+\usepackage[hidelinks]{hyperref}   % load late
+
+% Two columns, and twelve of the thirteen tables are wider than one column.
+% \wtable spans both columns; \ntable is the single-column case.
+\newenvironment{wtable}{\begin{table*}[!t]}{\end{table*}}
+\newenvironment{ntable}{\begin{table}[!t]}{\end{table}}
+
+% A table-heavy paper starves the float queue at IEEEtran's defaults, which
+% pushes tables many pages past the text that discusses them. Loosen the
+% placement parameters so each table lands near its argument.
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.70}
+
+\begin{document}
+
+\title{Provenance, Not Behaviour: A Serialisation Artifact in Edge-IIoTset and
+a Leakage-Free Benchmark for Precision-Agriculture Intrusion Detection}
+
+\author{Mostafa~M.~Galal%
+\thanks{M. M. Galal is with the Department of Computer and Systems
+Engineering, Alexandria University, Alexandria, Egypt
+(e-mail: mostafam.galal82@gmail.com).}}
+
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+Intrusion detection, industrial IoT, precision agriculture, data leakage,
+benchmark integrity, federated learning, edge computing, Edge-IIoTset.
+\end{IEEEkeywords}
+
+\input{body}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

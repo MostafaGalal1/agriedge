@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# The Edge-IIoTset dataset is not redistributed here. Point
+# AGRIEDGE_DATASET_ROOT at your own copy; see the README.
+Edge-IIoTset dataset/
+*.pcap
+
+# The built benchmark is 37 MB and fully regenerable:
+#     python experiments/03_build_agribench.py
+# It is published as a Zenodo artifact rather than carried in git.
+results/*.parquet
+
+# LaTeX build intermediates. The PDFs themselves are tracked.
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.spl
+paper/*.toc
