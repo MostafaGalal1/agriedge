@@ -195,10 +195,11 @@ them. Engelen et al.~\cite{engelen2021cicids} reverse-engineer CICIDS2017 and
 find labelling and traffic-generation faults severe enough to change reported
 conclusions. Flood et al.~\cite{flood2024designsmells} generalise this into a
 catalogue of six recurring \emph{data design smells} obtained by manual
-analysis of seven highly-cited benchmark datasets, among them \emph{wrong
-label}, \emph{traffic collapse} and---closest to our finding---\emph{highly
-dependent features}, where distinct features carry near-identical information
-about the label. Arp et al.~\cite{arp2022dosdonts} survey thirty top-tier
+analysis of seven highly-cited benchmark datasets. Two of the six sit near our
+finding: \emph{highly dependent features}, covering features of outsized
+importance that are unrelated to the underlying mechanism of an attack, and
+\emph{wrong label}, covering mislabelled data produced by inaccurate ground
+truth in a generation testbed. Arp et al.~\cite{arp2022dosdonts} survey thirty top-tier
 security papers and codify the recurring methodological pitfalls of
 learning-based security, spurious correlation among them.
 
@@ -206,16 +207,23 @@ This paper sits inside that programme rather than alongside it, and two things
 distinguish its contribution. First, Edge-IIoTset is not among the seven
 datasets Flood et al. examine, and we are not aware of any comparable audit of
 it; the catalogue therefore does not yet cover the dataset that IIoT and
-agricultural work overwhelmingly relies on. Second, the mechanism differs in
-kind. The dependent features documented in that literature are genuine network
-properties---destination port, packet size, flow duration---that happen to
-correlate with the label because of how traffic was generated. The columns we
-identify are not network properties at all under the values that carry the
-signal: the discriminating token is the placeholder written where a protocol
-field was \emph{absent}, and its spelling records which file the row was parsed
-from. The dependency is thus perfect rather than merely strong, and it is
-invisible to any inspection that casts the column to a numeric type before
-looking at it.
+agricultural work overwhelmingly relies on. Second, the fault sits where the
+catalogue does not look. All six smells locate the problem in the testbed---in
+how traffic was generated, how the simulation was configured, or how ground
+truth was established. Here the captures are sound, the ground truth is
+accurate, and every label is correct; the artifact enters afterwards, in the
+pipeline that serialises the captures into a feature table, because the two
+label classes were parsed in separate passes that disagree about how to spell
+an absent value. It is therefore not \emph{wrong label}, since no label is
+wrong, and not quite \emph{highly dependent features} either: the features
+documented under that heading are genuine network properties---destination
+port, packet size, flow duration---that correlate with the label because of how
+traffic was generated, whereas the token carrying our signal is not a network
+property at all. It is the placeholder written where a protocol field was
+\emph{absent}, and its spelling records which file the row was parsed from. The
+dependency is perfect rather than merely strong, it originates downstream of
+capture rather than in the testbed, and it is invisible to any inspection that
+casts the column to a numeric type before looking at it.
 
 Two results are closer still to ours. Bouke and
 Abdullah~\cite{bouke2023patternleakage} study \emph{pattern leakage} introduced
