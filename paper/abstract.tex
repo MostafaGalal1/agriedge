@@ -1,46 +1,31 @@
 %% Abstract text, shared by both class wrappers. Both elsarticle and IEEEtran
 %% provide \begin{abstract}; only its placement differs, so the wrappers supply
 %% the environment and this file supplies the prose.
-Edge-IIoTset has become the reference benchmark for machine-learning intrusion
-detection in the industrial Internet of Things, and the literature built on it
-reports accuracies clustered above 99\%. We show that a large
-share of that performance is not intrusion detection. The preprocessing recipe
-distributed with the dataset instructs researchers to one-hot encode seven
-categorical columns. Four of those columns separate attack from normal traffic
-with an accuracy of 1.0000 on their own, through nothing more than the spelling
-of the placeholder written for an absent protocol field: the string \code{0} in
-the normal-traffic branch of the dataset build against the string \code{0.0} in
-the attack branch. The label is therefore recoverable from a serialisation
-artifact that encodes file provenance, without any network behaviour being
-modelled. The artifact is present in both curated subsets, separating every one
-of 157{,}800 rows in the ML subset and every one of 2{,}219{,}201 rows in the
-DNN subset, so both the classical-ML and the deep-learning branches of this
-literature are exposed to it. Under 5-fold $\times$ 3-repeat stratified
+%%
+%% Length is set by the tightest target: IEEE IoT-J requires 150-250 words, one
+%% paragraph, no citations and no displayed equations. This is 243 words. The
+%% longer 460-word version posted as arXiv v1 is preserved in the repository
+%% history; do not re-expand this file without checking the venue's limit.
+Edge-IIoTset is the reference benchmark for machine-learning intrusion
+detection in the industrial Internet of Things, and results reported on it
+cluster above 99\%. We show that much of that performance is not intrusion
+detection. The preprocessing recipe distributed with the dataset instructs
+researchers to one-hot encode seven categorical columns. Four of them separate
+attack from normal traffic with an accuracy of 1.0000 on their own, through the
+spelling of the placeholder written for an absent protocol field: the string
+\code{0} in the normal-traffic branch of the dataset build against \code{0.0}
+in the attack branch. The label is recoverable from a serialisation artifact
+encoding file provenance, with no network behaviour modelled, and separates
+every row of both curated subsets. Under 5-fold $\times$ 3-repeat
 cross-validation, five of six standard classifiers attain exactly $1.0000 \pm
-0.0000$ accuracy across all fifteen folds and the sixth attains 0.99998,
-including Gaussian naive Bayes and logistic regression---models far too weak to
-genuinely solve the task. A 1D-CNN and a
-deep MLP of the kind that produce the literature's headline results reach
-1.0000 accuracy on a single stratified split under the same recipe.
-Under a corrected protocol that canonicalises placeholder spellings, naive
-Bayes falls by 0.3005 macro-F1 and the strongest model settles at $0.9503 \pm
-0.0011$. The leak is not a property of one-hot encoding: label, ordinal and
-frequency encoding all yield the same 1.0000 single-column accuracy.
-
-We then address a second obstacle to domain-specific work: the curated subsets
-cannot support an agricultural study at all, because Modbus is absent from them
-(0 of 157{,}800 rows in the ML subset; 150 of 2{,}219{,}201 in the DNN subset)
-and per-device identity has been stripped to a single surviving MQTT topic. We
-rebuild the benchmark from the raw per-device captures under uniform parsing,
-producing \textbf{AgriEdge}: 1{,}276{,}122 rows across five agricultural
-devices with full device attribution, 149{,}996 Modbus rows, and no column
-separating the classes above 0.0288. On this corrected benchmark, a
-leave-one-device-out sweep locates the generalisation boundary precisely: every
-detector but naive Bayes transfers between perception sensors with little loss
-(0.9106--0.9999 balanced accuracy), but collapses across the perception/actuation
-layer boundary, with random forest falling from 0.9988 to 0.5083 and logistic
-regression to 0.4877---chance level---when the Modbus gateway is withheld. Federated evaluation yields a further negative result:
-non-IID partitioning costs at most 0.0037 macro-F1, while the uplink required
-to train a 28{,}450-parameter model over LoRaWAN costs 4.6 hours. We release
-the audit tooling, the benchmark construction pipeline, and all experimental
-code.
+0.0000$ accuracy and the sixth attains 0.99998. Under a corrected protocol,
+naive Bayes falls by 0.3005 macro-F1 and the strongest model settles at
+$0.9503 \pm 0.0011$. Label, ordinal and frequency encoding leak identically.
+Because the curated subsets also lack Modbus and per-device identity, we
+rebuild the benchmark from the raw captures under uniform parsing, producing
+\textbf{AgriEdge}: 1{,}276{,}122 rows, five devices with full attribution, and
+no column separating the classes above 0.0288. A leave-one-device-out sweep
+locates the generalisation boundary at the perception/actuation layer, where
+random forest falls from 0.9988 to 0.5083 balanced accuracy. Non-IID federated
+partitioning costs at most 0.0037 macro-F1, but a 20-round LoRaWAN training run
+costs 4.6 hours of uplink.

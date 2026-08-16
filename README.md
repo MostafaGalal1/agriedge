@@ -132,8 +132,8 @@ paper/refs.bib             bibliography
 cd paper && make
 ```
 
-That produces both versions: `manuscript.pdf` (Elsevier, 30 pages) and
-`manuscript-ieee.pdf` (IEEE, 13 pages). `make elsevier` and `make ieee` build
+That produces both versions: `manuscript.pdf` (Elsevier, 29 pages) and
+`manuscript-ieee.pdf` (IEEE, 12 pages). `make elsevier` and `make ieee` build
 one at a time; `make arxiv` packages the Elsevier version for arXiv submission.
 
 The two `.tex` files are thin class wrappers over the same `body.tex`,
