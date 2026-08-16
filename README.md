@@ -9,7 +9,7 @@ Edge-IIoTset dataset.
 
 This repository accompanies the paper *"Provenance, Not Behaviour: A
 Serialisation Artifact in Edge-IIoTset and a Leakage-Free Benchmark for
-Precision-Agriculture Intrusion Detection"* (`paper/manuscript.md`).
+Precision-Agriculture Intrusion Detection"* (`paper/manuscript.pdf`).
 
 ## The short version
 
@@ -21,9 +21,10 @@ Normal-traffic and attack captures were parsed separately and concatenated, so
 one branch wrote `0` and the other wrote `0.0`. Encoding turns that build
 artifact into a feature, and file provenance becomes the label.
 
-Under the distributed recipe, all six standard classifiers plus an MLP and a
-1D-CNN reach 1.0000 ± 0.0000 accuracy across fifteen cross-validation folds. The
-leak survives label, ordinal and frequency encoding identically.
+Under the distributed recipe, five of six standard classifiers reach exactly
+1.0000 ± 0.0000 accuracy across fifteen cross-validation folds and the sixth
+reaches 0.99998. A deep MLP and a 1D-CNN reach 1.0000 on a single stratified
+split. The leak survives label, ordinal and frequency encoding identically.
 
 ## Check your own pipeline
 
@@ -123,8 +124,6 @@ paper/preamble-common.tex  packages and macros, shared by both
 paper/manuscript.tex       Elsevier wrapper (elsarticle, single column)
 paper/manuscript-ieee.tex  IEEE wrapper (IEEEtran, two column)
 paper/refs.bib             bibliography
-paper/manuscript.md        the same manuscript in Markdown
-paper/build_html.py        Markdown -> self-contained HTML preview
 ```
 
 ## Building the paper
@@ -133,10 +132,9 @@ paper/build_html.py        Markdown -> self-contained HTML preview
 cd paper && make
 ```
 
-That produces both versions: `manuscript.pdf` (Elsevier, 27 pages) and
-`manuscript-ieee.pdf` (IEEE, 11 pages). `make elsevier` and `make ieee` build
-one at a time; `make html` regenerates the HTML preview from `manuscript.md`.
-`make arxiv` packages the Elsevier version for arXiv submission.
+That produces both versions: `manuscript.pdf` (Elsevier, 30 pages) and
+`manuscript-ieee.pdf` (IEEE, 13 pages). `make elsevier` and `make ieee` build
+one at a time; `make arxiv` packages the Elsevier version for arXiv submission.
 
 The two `.tex` files are thin class wrappers over the same `body.tex`,
 `abstract.tex` and `preamble-common.tex`, so they cannot drift apart. **Edit

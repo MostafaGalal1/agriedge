@@ -70,9 +70,12 @@ single-column held-out accuracy, normalised mutual information). Four columns
 reach a separation rate of 1.0000 (Section~\ref{sec:audit}).
 
 \item \textbf{We measure the artifact's contribution to reported performance}
-under 5-fold $\times$ 3-repeat cross-validation. All six standard classifiers
-reach $1.0000 \pm 0.0000$ accuracy in every fold, as do a 1D-CNN and an MLP;
-under the corrected protocol the same models span 0.6995 to 0.9503 macro-F1
+under 5-fold $\times$ 3-repeat cross-validation. Five of six standard
+classifiers reach exactly $1.0000 \pm 0.0000$ accuracy in every fold and the
+sixth reaches 0.99998; under the corrected protocol the same models span 0.6995
+to 0.9503 macro-F1. A 1D-CNN and a deep MLP,
+evaluated separately on a single stratified split, reach 1.0000 accuracy under
+the same recipe and lose more than 0.21 macro-F1 under correction
 (Section~\ref{sec:worth}).
 
 \item \textbf{We show the leak is encoding-agnostic.} One-hot, label, ordinal
@@ -88,9 +91,11 @@ rebuild the benchmark from the raw captures under uniform parsing
 
 \item \textbf{We locate the generalisation boundary in agricultural IIoT
 detection.} A leave-one-device-out sweep over all five devices shows that
-transfer between perception sensors is near-free ($\geq 0.9880$ balanced
-accuracy) while transfer across the perception/actuation layer collapses to
-0.4877--0.5083 for half the model suite (Section~\ref{sec:lodo}).
+transfer between perception sensors is near-free---every model but naive Bayes
+scores 0.9880--0.9999 balanced accuracy when soil moisture, water level or pH
+is withheld, and 0.9106--0.9385 for temperature and humidity---while transfer
+across the perception/actuation layer collapses to 0.4877--0.5083, straddling
+the trivial baseline, for two of the six (Section~\ref{sec:lodo}).
 
 \item \textbf{We show that the federated literature is optimising the wrong
 constraint.} Non-IID partitioning costs at most 0.0037 macro-F1, while training
@@ -361,8 +366,9 @@ by farm possible, and which the curated subsets discard.
 
 Sampling is per-chunk at a constant rate rather than by prefix, which is
 unbiased with respect to position in the capture session. Normal devices are
-capped at 150{,}000 rows each and attack classes at 60{,}000; classes smaller
-than the cap are taken whole, preserving the natural rarity of MITM and
+capped at 150{,}000 rows each and attack classes at 60{,}000; because sampling
+is per chunk, a class may overshoot its cap by less than one chunk. Classes
+smaller than the cap are taken whole, preserving the natural rarity of MITM and
 fingerprinting. Host identifiers and raw payload columns are dropped at build
 time so no downstream protocol can reintroduce them.
 
@@ -528,7 +534,10 @@ over all fifteen folds (Table~\ref{tab:kfold}).
 \centering
 \footnotesize
 \caption{Binary classification under the distributed recipe (A) versus the
-corrected protocol (B). ML subset, 15 folds, mean $\pm$ 95\% CI half-width.}
+corrected protocol (B). ML subset, 15 folds, mean $\pm$ 95\% CI half-width.
+Five of the six models score exactly $1.0000 \pm 0.0000$ under the recipe; the
+MLP row is reported to five decimals because it does not, and rounding it to
+four would conceal that.}
 \label{tab:kfold}
 \begin{fittable}
 \begin{tabular}{lcccc r}
@@ -538,7 +547,7 @@ Model & Accuracy (A) & Accuracy (B) & Macro-F1 (A) & Macro-F1 (B) & $\Delta$F1 \
 Hist.\ gradient boosting & $\mathbf{1.0000 \pm 0.0000}$ & $0.9752 \pm 0.0005$ & $\mathbf{1.0000 \pm 0.0000}$ & $\mathbf{0.9503 \pm 0.0011}$ & 0.0497 \\
 Random forest            & $\mathbf{1.0000 \pm 0.0000}$ & $0.9658 \pm 0.0005$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.9343 \pm 0.0009$ & 0.0657 \\
 Decision tree            & $\mathbf{1.0000 \pm 0.0000}$ & $0.9610 \pm 0.0005$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.9271 \pm 0.0009$ & 0.0729 \\
-MLP                      & $\mathbf{1.0000 \pm 0.0000}$ & $0.9095 \pm 0.0008$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.7858 \pm 0.0023$ & 0.2142 \\
+MLP                      & $0.99998 \pm 0.00001$ & $0.9095 \pm 0.0008$ & $0.99996 \pm 0.00003$ & $0.7858 \pm 0.0023$ & 0.2142 \\
 Logistic regression      & $\mathbf{1.0000 \pm 0.0000}$ & $0.8993 \pm 0.0008$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.7567 \pm 0.0024$ & 0.2433 \\
 Gaussian naive Bayes     & $\mathbf{1.0000 \pm 0.0000}$ & $0.8742 \pm 0.0125$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.6995 \pm 0.0089$ & \textbf{0.3005} \\
 \bottomrule
@@ -548,12 +557,17 @@ Gaussian naive Bayes     & $\mathbf{1.0000 \pm 0.0000}$ & $0.8742 \pm 0.0125$ & 
 
 Three observations.
 
-\textbf{All six models attain $1.0000 \pm 0.0000$, in every one of fifteen
-folds.} Not 0.999, and not on a lucky split: zero variance across fifteen
-independent stratified partitions, for six structurally different learners.
-Perfect, invariant separation of a real network-traffic capture is not a
-plausible outcome of intrusion detection. It is the signature of a feature that
-\emph{is} the label.
+\textbf{Five of the six models attain exactly $1.0000 \pm 0.0000$, in every one
+of fifteen folds.} Not 0.999, and not on a lucky split: zero variance across
+fifteen independent stratified partitions, for five structurally different
+learners. The sixth, the small \mbox{(64, 32)} MLP, averages 0.99998---fewer
+than one misclassified row per fold out of 31{,}560, and the only model in the
+suite whose recipe score is not bit-exact. We report it unrounded rather than
+let it round up to the same $1.0000$ as the rest, since a paper about numbers
+that were never checked closely should survive being checked closely itself.
+Perfect or near-perfect invariant separation of a real network-traffic capture
+is not a plausible outcome of intrusion detection. It is the signature of a
+feature that \emph{is} the label.
 
 \textbf{The canary fires.} Gaussian naive Bayes assumes conditional
 independence of features given the class and cannot represent the interactions
@@ -572,10 +586,13 @@ range the literature reports.
 
 A reviewer may reasonably object that the literature's headline numbers come
 from deep architectures, and that a deep model might have been robust to the
-artifact. It is not. Table~\ref{tab:deep} trains an MLP (59{,}586 parameters)
-and a 1D-CNN (6{,}658 parameters)---the latter matching the construction used
-in several published Edge-IIoTset papers---under both protocols on identical
-splits.
+artifact. It is not. Table~\ref{tab:deep} trains a deep MLP (61{,}378
+parameters under the distributed recipe, 59{,}586 under the corrected one, the
+difference being input width) and a 1D-CNN (6{,}658 parameters)---the latter
+matching the construction used in several published Edge-IIoTset papers---under
+both protocols on a single identical stratified split. This is a separate
+experiment from the fifteen-fold comparison in Table~\ref{tab:kfold}, whose MLP
+is the smaller \mbox{(64, 32)} estimator from the classical suite.
 
 \begin{wtable}
 \centering
@@ -806,15 +823,15 @@ not what happens.
 
 \textbf{Perception sensors are mutually substitutable.} Withholding soil
 moisture, water level or pH costs almost nothing: every model except naive
-Bayes stays above 0.9880 balanced accuracy, and the tree ensembles remain at
-0.9997. A detector trained on three agricultural sensors transfers to a fourth
+Bayes stays in the 0.9880--0.9999 band, and the tree-based models
+remain at 0.9995 or better. A detector trained on three agricultural sensors transfers to a fourth
 essentially without loss. Temperature and humidity is slightly harder
 (0.9106--0.9385), consistent with it being the one device that carries a
 distinct MQTT topic in the original capture.
 
 \textbf{The failure is across layers, not across devices.} Only Modbus---the
 sole actuation-layer device, speaking a different protocol---produces collapse:
-random forest 0.5083, logistic regression 0.4877, both at or below the trivial
+random forest 0.5083, logistic regression 0.4877, straddling the trivial
 baseline of 0.5. The generalisation boundary in this benchmark is the
 perception/actuation layer boundary, not device identity.
 
@@ -838,7 +855,7 @@ occurs.
 
 \textbf{Random splitting remains optimistic in the aggregate.} Four models
 reach 0.9988 balanced accuracy under random splitting, above their worst-case
-LODO performance by 0.08 to 0.49. This is not leakage in the
+LODO performance by 0.18 to 0.49. This is not leakage in the
 Section~\ref{sec:audit} sense---the audit confirms no column separates the
 classes---but random splitting places packets from the same capture session and
 attack burst on both sides of the boundary. Random-split accuracy on AgriEdge
@@ -1046,8 +1063,8 @@ from a \emph{different architectural layer} before selecting.
 is the operationally important consequence. A farm that validates its IDS
 across its soil, water and pH probes will see excellent numbers and may
 reasonably conclude the detector generalises. Adding a Modbus irrigation
-controller then places it in the regime where half the model suite performs at
-or below chance. Actuation-layer traffic needs its own validation, and arguably
+controller then places it in the regime where a third of the model suite
+performs at chance. Actuation-layer traffic needs its own validation, and arguably
 its own detector.
 
 \paragraph{Prefer simpler and smaller than the literature implies} The decision
@@ -1119,8 +1136,9 @@ as a substitute for cross-network validation.
 
 \paragraph{Statistical reporting} The headline protocol comparison
 (Table~\ref{tab:kfold}) is reported over 5-fold $\times$ 3-repeat stratified
-cross-validation with 95\% intervals. The LODO sweep, federated runs and
-edge-cost measurements are single seeded runs; their effects are large relative
+cross-validation with 95\% intervals. The deep baselines
+(Table~\ref{tab:deep}), the LODO sweep, the federated runs and the edge-cost
+measurements are single seeded runs; their effects are large relative
 to the fold-level variance observed in Table~\ref{tab:kfold}, but we do not
 quantify their variance directly. Cross-validation intervals are also not
 strictly independent across folds within a repeat, so they should be read as
@@ -1207,8 +1225,10 @@ the dataset converts a placeholder-spelling difference between the
 normal-traffic and attack-traffic build branches into features that recover the
 label exactly. Four of the seven columns the recipe names separate every row of
 both curated subsets on their own---157{,}800 rows in one, 2{,}219{,}201 in the
-other---and under that recipe all six standard classifiers, plus a 1D-CNN and
-an MLP, attain 1.0000 accuracy in every one of fifteen cross-validation folds.
+other---and under that recipe five of six standard classifiers attain exactly
+1.0000 accuracy in every one of fifteen cross-validation folds and the sixth
+attains 0.99998, while a 1D-CNN and a deep MLP reach 1.0000 on a single
+stratified split.
 The leak is not a property of one-hot encoding: label, ordinal and frequency
 encoding transmit it identically.
 
@@ -1216,14 +1236,14 @@ We stop short of claiming that any particular published number is an artifact,
 since preprocessing is rarely reported in sufficient detail to determine it
 from outside. What we can say is stronger than a suspicion and weaker than an
 indictment: the recipe the dataset's own documentation prescribes yields
-perfect, zero-variance classification for every model we tried; the encodings
+perfect or all-but-perfect classification for every model we tried; the encodings
 researchers substitute for it do the same; and the affected columns are the
 ones an IIoT practitioner would naturally reach for. Any result on this dataset
 whose preprocessing touched those columns needs re-checking before it can be
 read as detection performance.
 
 Correcting the artifact costs the strongest model about five points of macro-F1
-and costs the weakest more than a third of its score. Rebuilding the benchmark
+and costs the weakest nearly a third of its score. Rebuilding the benchmark
 from raw captures under uniform parsing eliminates the artifact by
 construction, restores the Modbus traffic and per-device attribution that
 agricultural research requires, and yields a benchmark on which no column
@@ -1233,7 +1253,7 @@ On that corrected benchmark, a leave-one-device-out sweep locates where
 detection actually stops working. Transfer between perception sensors is nearly
 free. Transfer across the perception/actuation layer is not: withholding the
 Modbus gateway drops random forest from 0.9988 to 0.5083 balanced accuracy and
-logistic regression to 0.4877, at or below the trivial baseline, and inverts
+logistic regression to 0.4877, straddling the trivial baseline, and inverts
 the model ranking so that optimising average performance selects the model
 least able to survive the shift. Combined with a 342$\times$ spread in
 inference latency across models of indistinguishable random-split accuracy, the
@@ -1277,7 +1297,7 @@ are released under the MIT licence at
 \url{https://github.com/MostafaGalal1/agriedge} and archived under the
 persistent identifier \url{https://doi.org/10.5281/zenodo.21941210}, which
 resolves to the most recent release. The constructed benchmark is not carried
-in the repository, being 37~MB; it is published as a separate archived dataset
+in the repository, being 38~MB; it is published as a separate archived dataset
 at \url{https://doi.org/10.5281/zenodo.21941319}, so that it can be obtained
 directly without first acquiring the 10~GB source distribution. It is equally
 regenerable by running \code{experiments/03\_build\_agribench.py} against a

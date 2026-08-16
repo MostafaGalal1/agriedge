@@ -14,12 +14,14 @@ the attack branch. The label is therefore recoverable from a serialisation
 artifact that encodes file provenance, without any network behaviour being
 modelled. The artifact is present in both curated subsets, separating every one
 of 157{,}800 rows in the ML subset and every one of 2{,}219{,}201 rows in the
-DNN subset, and so is exposed to by both the classical-ML and the deep-learning
-branches of this literature. Under 5-fold $\times$ 3-repeat stratified
-cross-validation, all six standard classifiers attain $1.0000 \pm 0.0000$
-accuracy across all fifteen folds, including Gaussian naive Bayes and logistic
-regression---models far too weak to genuinely solve the task---and including an
-MLP and a 1D-CNN of the kind that produce the literature's headline results.
+DNN subset, so both the classical-ML and the deep-learning branches of this
+literature are exposed to it. Under 5-fold $\times$ 3-repeat stratified
+cross-validation, five of six standard classifiers attain exactly $1.0000 \pm
+0.0000$ accuracy across all fifteen folds and the sixth attains 0.99998,
+including Gaussian naive Bayes and logistic regression---models far too weak to
+genuinely solve the task. A 1D-CNN and a
+deep MLP of the kind that produce the literature's headline results reach
+1.0000 accuracy on a single stratified split under the same recipe.
 Under a corrected protocol that canonicalises placeholder spellings, naive
 Bayes falls by 0.3005 macro-F1 and the strongest model settles at $0.9503 \pm
 0.0011$. The leak is not a property of one-hot encoding: label, ordinal and
@@ -33,12 +35,11 @@ rebuild the benchmark from the raw per-device captures under uniform parsing,
 producing \textbf{AgriEdge}: 1{,}276{,}122 rows across five agricultural
 devices with full device attribution, 149{,}996 Modbus rows, and no column
 separating the classes above 0.0288. On this corrected benchmark, a
-leave-one-device-out sweep locates the generalisation boundary precisely:
-detectors transfer between perception sensors almost without loss
-(0.9880--0.9999 balanced accuracy), but collapse across the perception/actuation
+leave-one-device-out sweep locates the generalisation boundary precisely: every
+detector but naive Bayes transfers between perception sensors with little loss
+(0.9106--0.9999 balanced accuracy), but collapses across the perception/actuation
 layer boundary, with random forest falling from 0.9988 to 0.5083 and logistic
-regression to 0.4877---at or below the trivial baseline---when the Modbus
-gateway is withheld. Federated evaluation yields a further negative result:
+regression to 0.4877---chance level---when the Modbus gateway is withheld. Federated evaluation yields a further negative result:
 non-IID partitioning costs at most 0.0037 macro-F1, while the uplink required
 to train a 28{,}450-parameter model over LoRaWAN costs 4.6 hours. We release
 the audit tooling, the benchmark construction pipeline, and all experimental

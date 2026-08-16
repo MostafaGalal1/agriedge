@@ -3,7 +3,6 @@
 #   make            -> both PDFs
 #   make elsevier   -> manuscript.pdf       (elsarticle, single column)
 #   make ieee       -> manuscript-ieee.pdf  (IEEEtran, two column)
-#   make html       -> manuscript.html      (self-contained preview page)
 #   make clean      -> remove build intermediates, keep outputs
 #
 # Both .tex files are thin class wrappers over the same body.tex, abstract.tex
@@ -16,13 +15,9 @@
 TEX     := tectonic -X compile
 TEXOPTS := --keep-intermediates --keep-logs
 
-# The HTML preview needs the project venv, which lives beside the dataset
-# directory rather than inside the package.
-PYTHON  := ../../.venv/bin/python
-
 SHARED  := body.tex abstract.tex preamble-common.tex refs.bib
 
-.PHONY: all elsevier ieee html arxiv clean distclean fonts
+.PHONY: all elsevier ieee arxiv clean distclean fonts
 
 all: elsevier ieee
 
@@ -34,11 +29,6 @@ manuscript.pdf: manuscript.tex $(SHARED)
 
 manuscript-ieee.pdf: manuscript-ieee.tex $(SHARED)
 	$(TEX) $(TEXOPTS) manuscript-ieee.tex
-
-html: manuscript.html
-
-manuscript.html: manuscript.md build_html.py
-	$(PYTHON) build_html.py
 
 # arXiv submission tarball, built from the Elsevier (single-column) version.
 #
@@ -69,4 +59,4 @@ clean:
 	rm -f *.aux *.blg *.log *.out *.spl *.toc
 
 distclean: clean
-	rm -f manuscript.pdf manuscript-ieee.pdf manuscript.html *.bbl
+	rm -f manuscript.pdf manuscript-ieee.pdf *.bbl

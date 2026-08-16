@@ -18,7 +18,17 @@
 \newenvironment{wtable}{\begin{table}[htbp]}{\end{table}}
 \newenvironment{ntable}{\begin{table}[htbp]}{\end{table}}
 
-\journal{Computers and Electronics in Agriculture}
+% No venue claimed: this is a preprint, not a submission to a named journal.
+% An empty \journal{} still makes elsarticle print "Preprint submitted to
+% Elsevier", so the title-page footer is redefined to carry only the date.
+\journal{}
+\makeatletter
+\def\ps@pprintTitle{%
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \def\@oddfoot{\footnotesize\itshape\hfill\today}%
+  \let\@evenfoot\@oddfoot}
+\makeatother
 
 \begin{document}
 
