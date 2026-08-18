@@ -54,7 +54,64 @@ the other. Step~5 of the distributed recipe then applies
 Dummy encoding treats \code{0} and \code{0.0} as distinct tokens, so the
 resulting binary features encode \emph{which file a row came from}. Because
 normal traffic and attack traffic came from different files, file provenance is
-the label.
+the label (Figure~\ref{fig:mechanism}).
+
+\begin{wfigure}
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style   ={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=8mm},
+  capnode/.style   ={box, fill=black!4},
+  parse/.style ={box, fill=black!8, font=\small\itshape},
+  tok/.style   ={box, font=\small\ttfamily},
+  outnode/.style   ={box, minimum width=26mm},
+  flow/.style  ={-{Stealth[length=2mm]}, thin},
+]
+% two capture branches, parsed independently
+\node[capnode]   (ncap) {normal-traffic\\captures};
+\node[capnode, below=7mm of ncap] (acap) {attack\\captures};
+
+\node[parse, right=7mm of ncap] (npar) {parse pass};
+\node[parse, right=7mm of acap] (apar) {parse pass};
+
+\node[tok, right=7mm of npar] (ntok) {0};
+\node[tok, right=7mm of apar] (atok) {0.0};
+
+\draw[flow] (ncap) -- (npar);   \draw[flow] (acap) -- (apar);
+\draw[flow] (npar) -- (ntok);   \draw[flow] (apar) -- (atok);
+
+% concatenation
+\coordinate (mid) at ($(ntok)!0.5!(atok)$);
+\node[box, right=9mm of mid, fill=black!4] (cat) {concatenate};
+\draw[flow] (ntok) -- (cat);
+\draw[flow] (atok) -- (cat);
+
+\node[box, right=7mm of cat, font=\small\ttfamily] (enc) {get\_dummies};
+\draw[flow] (cat) -- (enc);
+
+% the two indicator columns, and what they are
+\node[outnode, right=9mm of enc, yshift=5mm]  (c1) {\texttt{col\_0} $=1$};
+\node[outnode, right=9mm of enc, yshift=-5mm] (c2) {\texttt{col\_0.0} $=1$};
+\draw[flow] (enc) -- (c1);
+\draw[flow] (enc) -- (c2);
+
+\node[right=3mm of c1, font=\small\bfseries] (l1) {normal};
+\node[right=3mm of c2, font=\small\bfseries] (l2) {attack};
+\draw[flow] (c1) -- (l1);
+\draw[flow] (c2) -- (l2);
+
+\begin{scope}[on background layer]
+  \node[draw, dashed, rounded corners=3pt, inner sep=5pt,
+        fit=(c1)(c2)(l1)(l2)] {};
+\end{scope}
+\end{tikzpicture}
+\caption{How file provenance becomes the label. The two captures were parsed in
+separate passes that serialise an absent field differently, and dummy encoding
+turns the two spellings into indicator columns. Since the files partition the
+classes, either column reproduces the label. No step involves network
+behaviour.}
+\label{fig:mechanism}
+\end{wfigure}
 
 The consequence is that four of the seven columns in the recipe recover the
 binary label with an accuracy of 1.0000 in isolation. No model that consumes
