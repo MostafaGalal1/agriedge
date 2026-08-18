@@ -8,38 +8,32 @@
 Precision agriculture has become one of the more consequential deployments of
 the industrial Internet of Things (IIoT). Soil-moisture probes, pH sensors,
 water-level floats and climate stations feed telemetry to edge gateways over
-lightweight publish/subscribe protocols, and those gateways in turn actuate
-irrigation pumps and valves over industrial fieldbus protocols such as Modbus
-TCP. The consequences of compromise are physical and immediate: a falsified
-soil-moisture reading can drive an irrigation controller to flood a field, and
-a denial-of-service attack against a message broker can prevent an irrigation
-trigger from firing during the narrow window in which it matters. Unlike an
-enterprise network, a farm has no on-site security staff, intermittent
-connectivity, and gateways that share a power budget with the machinery they
-control.
+lightweight publish/subscribe protocols, and those gateways actuate irrigation
+pumps and valves over fieldbus protocols such as Modbus TCP. The consequences
+of compromise are physical and immediate: a falsified soil-moisture reading can
+drive a controller to flood a field, and a denial-of-service attack against a
+broker can stop an irrigation trigger firing in the narrow window that matters.
+Unlike an enterprise network, a farm has no on-site security staff,
+intermittent connectivity, and gateways sharing a power budget with the
+machinery they control.
 
-These constraints have made machine-learning intrusion detection an attractive
-proposition, and the Edge-IIoTset dataset of Ferrag et
-al.~\cite{ferrag2022edgeiiotset} has become the dominant vehicle for evaluating
-it. The dataset is unusually well-suited to the task on paper: it was captured
-from a physical seven-layer testbed with real sensors, it spans fourteen attack
-classes across MQTT, Modbus, HTTP and DNS, and it is explicitly partitioned to
-support both centralised and federated learning. It is also convenient, at
-1.2~GB in its curated form, and it ships with a \code{Readme.txt} giving a
-step-by-step preprocessing recipe.
+These constraints have made machine-learning intrusion detection attractive,
+and the Edge-IIoTset dataset of Ferrag et al.~\cite{ferrag2022edgeiiotset} has
+become the dominant vehicle for evaluating it. On paper it is unusually
+well-suited: captured from a physical seven-layer testbed with real sensors,
+spanning fourteen attack classes across MQTT, Modbus, HTTP and DNS, and
+explicitly partitioned for both centralised and federated learning. It is also
+convenient at 1.2~GB, and ships with a \code{Readme.txt} giving a step-by-step
+preprocessing recipe.
 
-The results reported on it are, uniformly, extraordinary. Recent work reports
-99.27\% accuracy with 99.21\% F1~\cite{discover2026hybrid} and 99.94\%
-accuracy~\cite{hasan2025autoencoder}. Such numbers are
-ordinarily read as evidence that the problem is close to solved and that
-research attention should move to deployment concerns---model compression,
-federated aggregation, inference latency.
-
-This paper argues that the numbers should instead be read as a warning. We
-began with the intention of building a precision-agriculture intrusion
-detection system on Edge-IIoTset, following the standard pipeline. Before
-training, we audited the features the dataset's own documentation instructs
-researchers to construct. What we found is that the recipe manufactures a
+The results reported on it are uniformly extraordinary---99.27\% accuracy with
+99.21\% F1~\cite{discover2026hybrid}, 99.94\%
+accuracy~\cite{hasan2025autoencoder}---and such numbers are ordinarily read as
+evidence that the problem is close to solved and that attention should move to
+deployment concerns. This paper argues they should be read as a warning. We set
+out to build a precision-agriculture intrusion detector on Edge-IIoTset
+following the standard pipeline, and audited the features the dataset's own
+documentation instructs researchers to construct. The recipe manufactures a
 near-perfect label proxy out of a serialisation artifact.
 
 \subsection{The artifact in brief}
@@ -174,28 +168,22 @@ The precision-agriculture deployments that Edge-IIoTset's testbed models
 decompose into three layers, and the security properties of each differ
 sharply.
 
-\textbf{The perception layer} comprises the sensors that observe the physical
+\textbf{The perception layer} comprises the sensors observing the physical
 field: soil moisture, pH, water level, temperature and humidity. Their traffic
-is low-rate, highly periodic, and semantically narrow---a soil-moisture probe
-emits a scalar at a fixed interval. This regularity is what makes anomaly
-detection tractable at this layer, and also what makes the layer a target: an
-adversary who can alter a reading controls the actuation logic downstream
-without ever touching the actuator.
+is low-rate, periodic and semantically narrow---a soil-moisture probe emits a
+scalar at a fixed interval. That regularity makes anomaly detection tractable
+here, and makes the layer a target: an adversary who alters a reading controls
+the actuation logic downstream without touching the actuator.
 
 \textbf{The network layer} carries that telemetry. MQTT dominates sensor
 reporting because its publish/subscribe model and small header suit constrained
-devices, while Modbus TCP remains the lingua franca for actuation because it is
-what irrigation controllers and PLCs speak. Neither protocol authenticates or
-encrypts by default in typical farm deployments. A man-in-the-middle positioned
-between a probe and the broker can rewrite a moisture reading; a
-denial-of-service attack against the broker prevents irrigation triggers from
-firing at all.
+devices, while Modbus TCP remains the lingua franca for actuation. Neither
+authenticates nor encrypts by default in typical farm deployments.
 
 \textbf{The edge system layer} performs local processing. Agricultural sites
 are often served by cellular or LoRaWAN backhaul with severely constrained
-uplink, so detection must run on the gateway rather than in the cloud. This is
-the layer at which the tension between detection quality and resource budget
-binds.
+uplink, so detection must run on the gateway rather than in the cloud, where
+the tension between detection quality and resource budget binds.
 
 \subsection{The Edge-IIoTset dataset}
 
@@ -225,23 +213,18 @@ Architectures range from autoencoder-based lightweight feature
 learning~\cite{hasan2025autoencoder} to hybrid CNN-DNN models and TinyML
 deployments for energy-aware edge inference~\cite{screports2026tinyml}.
 
-\paragraph{Emerging scepticism} A parallel literature has begun questioning
-whether these numbers mean what they appear to. Hakim et
-al.~\cite{hakim2026crossdomain} train four lightweight architectures on one
-IIoT dataset and evaluate them, without retraining, on two structurally
-distinct ones; they find that models rely on coarse port-category shortcuts
-appearing 96--435$\times$ more frequently in source-domain attacks, and that
-prior work evaluates models only within their training network, leaving
-behaviour on unseen networks unverified. A dataset-centric review in
-\emph{Frontiers in Big Data}~\cite{frontiers2026datasetcentric} catalogues
-evaluation biases across IoT/IIoT intrusion detection, noting that published
-results can contain undocumented preprocessing operations, hidden leakage
-mechanisms, or inconsistent validation protocols, and that no studies report
-$k$-fold cross-validation on Edge-IIoTset, relying instead on 80/20 splits.
-Recent work on cross-domain heterogeneous
-benchmarking~\cite{bridge2026tchnet} and dataset-centric evaluation of
-federated intrusion detection~\cite{screports2026federated} points in the same
-direction.
+\paragraph{Emerging scepticism} A parallel literature questions whether these
+numbers mean what they appear to. Hakim et al.~\cite{hakim2026crossdomain}
+train four architectures on one IIoT dataset and evaluate them without
+retraining on two structurally distinct ones, finding reliance on coarse
+port-category shortcuts appearing 96--435$\times$ more often in source-domain
+attacks. A dataset-centric review~\cite{frontiers2026datasetcentric} catalogues
+evaluation biases across IoT/IIoT intrusion detection---undocumented
+preprocessing, hidden leakage, inconsistent validation---and notes that no
+study reports $k$-fold cross-validation on Edge-IIoTset, relying on 80/20
+splits. Work on cross-domain benchmarking~\cite{bridge2026tchnet} and
+dataset-centric federated evaluation~\cite{screports2026federated} points the
+same way.
 
 \paragraph{Benchmark integrity as a research programme} A distinct line of work
 audits intrusion detection benchmarks directly rather than proposing models for
@@ -288,18 +271,14 @@ label-recovering artifact in Edge-IIoTset, and to our knowledge no published
 work does.
 
 \paragraph{Our position relative to this work} Two literatures meet here. The
-IIoT-specific sceptical work has established \emph{that} generalisation fails
-and \emph{that} leakage is suspected, without localising a mechanism. The
-benchmark-integrity work has localised mechanisms precisely, but in the
-classical network-intrusion datasets rather than in Edge-IIoTset. This paper
-joins the two: it applies the auditing stance of the latter to the dataset the
-former is built on, and finds a mechanism that is both stronger than the
-dependencies previously catalogued---it recovers the label alone, at accuracy
-$1.0000$---and different in kind, since the discriminating value encodes file
-provenance rather than any property of the traffic. Our finding is
-complementary to Hakim et al.'s: they show models learn shortcuts that fail to
-transfer; we show that for Edge-IIoTset under its own documented recipe, the
-shortcut is not a network feature at all.
+IIoT-specific sceptical work establishes \emph{that} generalisation fails
+without localising a mechanism; the benchmark-integrity work localises
+mechanisms precisely, but in classical network-intrusion datasets. This paper
+applies the latter's auditing stance to the dataset the former is built on, and
+finds a mechanism both stronger than those previously catalogued---it recovers
+the label alone, at accuracy $1.0000$---and different in kind, since the
+discriminating value encodes file provenance rather than any property of the
+traffic.
 
 \paragraph{Federated learning for agricultural IIoT} Federated approaches have
 been proposed specifically for agricultural intrusion detection, including
@@ -313,9 +292,9 @@ choice matters.
 We consider an adversary with network access to a farm's IIoT segment, obtained
 through a compromised gateway, an exposed cellular modem, or physical proximity
 to an unsecured wireless link. The adversary cannot compromise the sensors'
-physical measurements but can observe, inject, and modify network traffic. We
-assume the detector runs on the edge gateway and that the gateway itself is
-trusted; detection of a compromised gateway is out of scope.
+physical measurements but can observe, inject and modify network traffic. We
+assume the detector runs on the edge gateway and that the gateway is trusted;
+detecting a compromised gateway is out of scope.
 
 The attack classes in Edge-IIoTset map onto agricultural consequences directly.
 \textbf{Man-in-the-middle} (ARP and DNS spoofing) alters telemetry in
@@ -342,38 +321,31 @@ classifier's apparent skill can this column supply on its own, without any
 network behaviour being modelled?} We compute three measures so that no single
 statistic carries the argument.
 
-\paragraph{Token purity} For each distinct token in a column, we count
-occurrences under each label. A token is \emph{pure} if it occurs under exactly
-one label. The \textbf{separation rate} is the fraction of rows covered by pure
-tokens. A column with a separation rate of 1.0 is a relabelling of the target.
+\paragraph{Token purity} For each distinct token we count occurrences under
+each label; a token is \emph{pure} if it occurs under exactly one. The
+\textbf{separation rate} is the fraction of rows covered by pure tokens, and a
+column at 1.0 is a relabelling of the target.
 
 \paragraph{Single-column held-out accuracy} We fit a decision tree to the
-one-hot encoding of that column alone, using a stratified 80/20 split, and
-report test accuracy. This measures directly what a model can extract from the
-column.
+one-hot encoding of that column alone under a stratified 80/20 split and report
+test accuracy, measuring directly what a model can extract from it.
 
 \paragraph{Normalised mutual information} between the column's tokens and the
 label, which is estimator-free and scale-free.
 
 We additionally run a mechanism-specific probe. For each column containing both
-the token \code{0} and the token \code{0.0}, we tabulate the label distribution
-of each spelling separately. If each spelling occurs under exactly one label,
-the column carries a \textbf{provenance marker}: the spelling of a value
-denoting \emph{absence}---which has no network semantics whatsoever---determines
-the label with certainty.
+\code{0} and \code{0.0} we tabulate the label distribution of each spelling. If
+each occurs under exactly one label, the column carries a \textbf{provenance
+marker}: the spelling of a value denoting \emph{absence}---which has no network
+semantics whatsoever---determines the label with certainty.
 
-Columns audited are exactly the seven that \code{Readme.txt} Step~5 instructs
-researchers to dummy-encode:
-
-\begin{quote}\raggedright
-\code{http.request.method}, \code{http.referer},
+The columns audited are exactly the seven \code{Readme.txt} Step~5 instructs
+researchers to dummy-encode: \code{http.request.method}, \code{http.referer},
 \code{http.request.version}, \code{dns.qry.name.len},
-\code{mqtt.conack.flags}, \code{mqtt.protoname}, \code{mqtt.topic}.
-\end{quote}
-
-Critically, we read all columns as strings. Pandas' type inference silently
-normalises \code{0} and \code{0.0} to the same float, which destroys the
-artifact before it can be observed---a plausible reason it has gone unreported.
+\code{mqtt.conack.flags}, \code{mqtt.protoname} and \code{mqtt.topic}.
+Critically, we read all columns as strings---pandas' type inference silently
+normalises \code{0} and \code{0.0} to the same float, destroying the artifact
+before it can be observed, which is a plausible reason it has gone unreported.
 
 \subsection{The two preprocessing protocols}
 
@@ -586,7 +558,7 @@ published study reports $k$-fold on this dataset---we evaluate under 5-fold
 $\times$ 3-repeat stratified cross-validation, reporting mean and 95\% interval
 over all fifteen folds (Table~\ref{tab:kfold}).
 
-\begin{wtable}
+\begin{vtable}
 \centering
 \footnotesize
 \caption{Binary classification under the distributed recipe (A) versus the
@@ -609,7 +581,7 @@ Gaussian naive Bayes     & $\mathbf{1.0000 \pm 0.0000}$ & $0.8742 \pm 0.0125$ & 
 \bottomrule
 \end{tabular}
 \end{fittable}
-\end{wtable}
+\end{vtable}
 
 Three observations.
 
@@ -1041,17 +1013,13 @@ preferable on both axes.
 
 \subsection{What this means for the Edge-IIoTset literature}
 
-We do not claim that every published result on Edge-IIoTset is invalid. Studies
-that operate on raw captures, that use only numeric protocol features, or that
-exclude the four affected columns are unaffected. But the affected recipe is
-the one the dataset authors distribute, and the columns are among the most
-intuitively appealing features in the dataset---\code{mqtt.topic} and
-\code{mqtt.protoname} look like exactly the MQTT-layer features an IIoT
-intrusion detector ought to use.
-
-\paragraph{How far has the recipe propagated?} We surveyed public
-implementations and papers for the recipe's fingerprints. Three observations
-follow.
+We do not claim every published result on Edge-IIoTset is invalid. Studies
+operating on raw captures, using only numeric protocol features, or excluding
+the four affected columns are unaffected. But the affected recipe is the one
+the dataset authors distribute, and \code{mqtt.topic} and \code{mqtt.protoname}
+look like exactly the MQTT-layer features an IIoT detector ought to use. We
+surveyed public implementations and papers for the recipe's fingerprints; three
+observations follow.
 
 First, the recipe is reproduced verbatim in public code. The helper function
 \code{encode\_text\_dummy}---an unusual name, traceable to Jeff Heaton's
@@ -1066,45 +1034,36 @@ ordinal and frequency encoding unchanged. A study that reports ``categorical
 variables were converted using label encoding'' has not escaped it.
 
 Third, the diagnostic signature is visible in published results. Hasan et
-al.~\cite{hasan2025autoencoder}, who report label encoding rather than dummy
-encoding, publish a confusion matrix in which their best model produces
-4{,}820 true positives, 25{,}620 true negatives, zero false positives and zero
-false negatives---a perfect classification of the held-out set---alongside
-99.94\% accuracy. We do not have access to their exact column list and so
-cannot attribute this with certainty. We observe only that a flawless confusion
-matrix on real network traffic is precisely what the artifact produces, that
-their stated encoding preserves it, and that their reported correlation-based
-feature pruning (dropping features correlated above 0.6) would collapse the
-four mutually-redundant leaking columns to one---which Table~\ref{tab:audit-ml}
-shows is sufficient on its own.
+al.~\cite{hasan2025autoencoder}, who report label rather than dummy encoding,
+publish a confusion matrix in which their best model produces 4{,}820 true
+positives, 25{,}620 true negatives and zero errors of either kind, alongside
+99.94\% accuracy. Without their exact column list we cannot attribute this with
+certainty. We observe only that a flawless confusion matrix on real network
+traffic is what the artifact produces, that their stated encoding preserves it,
+and that their correlation-based pruning (dropping features correlated above
+0.6) would collapse the four mutually-redundant leaking columns to
+one---which Table~\ref{tab:audit-ml} shows is sufficient alone.
 
 We raise this not to single out one paper. The recipe was distributed by the
 dataset's authors, the affected columns are the natural ones to use, and the
-artifact is invisible to anyone who loads the CSV with default pandas type
-inference. Following the documentation was the reasonable thing to do. The
-point is that the resulting numbers cannot be interpreted as detection
-performance, and that the affected population is much larger than a citation
-search for the recipe would suggest.
+artifact is invisible under default pandas type inference. Following the
+documentation was reasonable. The point is that the resulting numbers cannot be
+read as detection performance, and that the affected population is far larger
+than a citation search for the recipe would suggest.
 
 \subsection{Why the artifact survived}
 
-Three factors plausibly explain why an artifact this large went unreported for
-four years.
-
-First, \textbf{pandas hides it}. Default type inference coerces \code{0} and
-\code{0.0} to an identical float. A researcher who loads the CSV normally,
-inspects the columns, and finds them numerically identical has no reason to
-suspect anything. The artifact is visible only when columns are read as
-strings---which is exactly what \code{get\_dummies} effectively does
-downstream, after the encoding decision has already been made.
-
-Second, \textbf{the result looks like success}. A pipeline returning 99.9\%
-accuracy does not prompt debugging. The incentive to investigate an anomalously
-good result is weaker than the incentive to investigate a bad one.
-
-Third, \textbf{the recipe carries the dataset's authority}. It ships in the
-dataset's own \code{Readme.txt}. Following it is the conservative choice, and
-deviation would require justification.
+Three factors plausibly explain four years of silence. \textbf{Pandas hides
+it}: default type inference coerces \code{0} and \code{0.0} to an identical
+float, so a researcher who loads the CSV normally and inspects the columns
+finds them identical, the difference surfacing only when they are read as
+strings---which is what \code{get\_dummies} effectively does downstream, after
+the encoding decision is made. \textbf{The result looks like success}: a
+pipeline returning 99.9\% accuracy does not prompt debugging, and the incentive
+to investigate an anomalously good result is weaker than for a bad one. And
+\textbf{the recipe carries the dataset's authority}, shipping in its own
+\code{Readme.txt}, so following it is the conservative choice and deviation
+would need justifying.
 
 \subsection{Implications for precision-agriculture deployment}
 
@@ -1146,28 +1105,27 @@ release it as a general tool for that reason.
 \section{Threats to Validity}
 
 \paragraph{Construct validity} Our separation-rate measure treats a column as
-leaking if its tokens are label-pure. In a genuinely separable problem, a
-legitimately predictive feature could be pure without being an artifact. We
-address this with the provenance probe, which tests the specific hypothesis
-that the \emph{spelling of an absence marker} carries the signal---a quantity
-with no network semantics under any reading. The four flagged columns all
-satisfy this stricter test.
+leaking if its tokens are label-pure, and a legitimately predictive feature
+could be pure without being an artifact. The provenance probe addresses this by
+testing the narrower hypothesis that the \emph{spelling of an absence marker}
+carries the signal---a quantity with no network semantics under any reading.
+All four flagged columns satisfy that stricter test.
 
 \paragraph{Internal validity} Protocols A and B differ in more than placeholder
 canonicalisation: B also deduplicates and may encode high-cardinality columns
 structurally. Our strict-threshold ablation isolates the encoding choice and
-shows it contributes little, and the duplicate rate is only 0.52\%, bounding
-its contribution. Canonicalisation is therefore the dominant effect. We have
-not run a full factorial ablation of all four corrections.
+shows it contributes little, and the 0.52\% duplicate rate bounds that
+contribution, so canonicalisation is the dominant effect. We have not run a
+full factorial ablation of all four corrections.
 
-\paragraph{External validity} Our LODO sweep covers all five devices, which
-resolves what would otherwise have been a serious threat: had we withheld only
-Modbus, we would have concluded that any unseen device breaks detection, which
+\paragraph{External validity} The LODO sweep covers all five devices, which
+resolves what would otherwise be a serious threat: had we withheld only Modbus,
+we would have concluded that any unseen device breaks detection, which
 Table~\ref{tab:lodo} shows is false. The remaining limitation is that AgriEdge
-contains exactly one actuation-layer device, so ``the perception/actuation
-boundary'' is inferred from a single instance of that layer. A testbed with
-several distinct fieldbus devices would be needed to confirm that the boundary
-is architectural rather than a peculiarity of this particular Modbus capture.
+holds exactly one actuation-layer device, so the perception/actuation boundary
+is inferred from a single instance. Confirming it is architectural rather than
+a peculiarity of this Modbus capture needs a testbed with several distinct
+fieldbus devices.
 
 \paragraph{Cross-dataset generalisation is out of scope, deliberately} Whether
 detectors trained on AgriEdge transfer to a different IIoT network is the
@@ -1210,29 +1168,21 @@ PyTorch's Metal backend, training in under a minute each. No experiment
 required datacentre hardware.
 
 \paragraph{Provenance of the audited copy} Because this paper makes a claim
-about a distribution rather than about a model, the copy matters. Edge-IIoTset
-is published on IEEE DataPort, submitted by the lead author on 18~January
-2022 and gated behind a subscription \cite{ferrag2022dataport}. The DataPort
-record itself, however, instructs readers to retrieve the data from a Kaggle
-repository under that same author's account, and gives the retrieval path
-verbatim as \code{Edge-IIoTset dataset/} \code{Selected dataset for ML and
-DL/}\code{DNN-EdgeIIoT-dataset.csv}. The free channel is therefore
-author-sanctioned rather than a third-party re-upload, it serves the same
-release as the subscription channel, and---being free---it is what the
-community in practice trains on. The copy audited here was obtained through
-it, at exactly that path.
-
-Three further observations argue that the artifact is not an accident of
-repackaging. The copy's \code{Readme.txt}, documentation PDF and CSV files all
-carry the authors' 18~March 2022 timestamps, across ten normal-traffic device
-directories and fourteen attack captures, and its structure matches the
-description in the dataset paper: 61 protocol features alongside
-\code{Attack\_label} and \code{Attack\_type}. The artifact is present in the
-authors' own per-device raw captures, not only in the merged curated
-subsets---the normal-traffic captures write the placeholder as \code{0} and
-the attack captures write it as \code{0.0}---and a mirror that re-archives a
-download does not regenerate two dozen per-device CSVs. And it is visible in
-the raw CSV text, independent of any parsing library.
+about a distribution rather than a model, the copy matters. Edge-IIoTset is
+published on IEEE DataPort behind a subscription~\cite{ferrag2022dataport}, but
+the DataPort record itself directs readers to a Kaggle repository under the
+lead author's account and gives the retrieval path verbatim. That free channel
+is therefore author-sanctioned rather than a third-party re-upload, serves the
+same release, and is what the community in practice trains on; the copy audited
+here came from it, at exactly that path. Three observations argue the artifact
+is not an accident of repackaging. The \code{Readme.txt}, documentation PDF and
+CSVs all carry the authors' 18~March 2022 timestamps across ten normal-traffic
+device directories and fourteen attack captures, and the structure matches the
+dataset paper. The artifact is present in the authors' own per-device raw
+captures---normal-traffic writes \code{0}, attack writes \code{0.0}---not only
+in the merged subsets, and a mirror that re-archives a download does not
+regenerate two dozen per-device CSVs. And it is visible in the raw CSV text,
+independent of any parsing library.
 
 We nonetheless encourage readers to verify against their own copy. The
 repository includes a dependency-free script that does so in one command,
@@ -1246,27 +1196,27 @@ python scripts/verify_placeholder_split.py \
 \section{Conclusion}
 
 Edge-IIoTset carries a serialisation artifact that makes file provenance
-linearly separable from the label. The preprocessing recipe distributed with
-the dataset converts a placeholder-spelling difference between the
-normal-traffic and attack-traffic build branches into features that recover the
-label exactly. Four of the seven columns the recipe names separate every row of
-both curated subsets on their own---157{,}800 rows in one, 2{,}219{,}201 in the
-other---and under that recipe five of six standard classifiers attain exactly
-1.0000 accuracy in every one of fifteen cross-validation folds and the sixth
-attains 0.99998, while a 1D-CNN and a deep MLP reach 1.0000 on a single
-stratified split.
-The leak is not a property of one-hot encoding: label, ordinal and frequency
-encoding transmit it identically.
+linearly separable from the label. The distributed recipe converts a
+placeholder-spelling difference between the normal-traffic and attack build
+branches into features that recover the label exactly. Four of the seven
+columns the recipe names separate every row of both curated
+subsets---157{,}800 rows in one, 2{,}219{,}201 in the other---and under it five
+of six standard classifiers attain exactly 1.0000 accuracy in every one of
+fifteen folds and the sixth attains 0.99998, while a 1D-CNN and a deep MLP
+reach 1.0000 on a single stratified split. Label, ordinal and frequency
+encoding transmit the leak identically.
 
 We stop short of claiming that any particular published number is an artifact,
-since preprocessing is rarely reported in sufficient detail to determine it
-from outside. What we can say is stronger than a suspicion and weaker than an
-indictment: the recipe the dataset's own documentation prescribes yields
-perfect or all-but-perfect classification for every model we tried; the encodings
-researchers substitute for it do the same; and the affected columns are the
-ones an IIoT practitioner would naturally reach for. Any result on this dataset
-whose preprocessing touched those columns needs re-checking before it can be
-read as detection performance.
+since preprocessing is rarely reported in enough detail to tell from outside.
+What we can say is stronger than a suspicion and weaker than an indictment: the
+recipe the dataset's own documentation prescribes yields perfect or
+all-but-perfect classification for every model we tried, the encodings
+researchers substitute for it do the same, and the affected columns are the
+ones an IIoT practitioner would naturally reach for. The mechanism is not
+specific to this dataset either---it needs only that a corpus concatenate
+separately-parsed sources whose separation tracks the label, which describes
+much of the benchmark suite. Any result whose preprocessing touched those
+columns needs re-checking before it can be read as detection performance.
 
 Correcting the artifact costs the strongest model about five points of macro-F1
 and costs the weakest nearly a third of its score. Rebuilding the benchmark
@@ -1276,14 +1226,14 @@ agricultural research requires, and yields a benchmark on which no column
 separates the classes above 0.0288.
 
 On that corrected benchmark, a leave-one-device-out sweep locates where
-detection actually stops working. Transfer between perception sensors is nearly
-free. Transfer across the perception/actuation layer is not: withholding the
-Modbus gateway drops random forest from 0.9988 to 0.5083 balanced accuracy and
-logistic regression to 0.4877, straddling the trivial baseline, and inverts
-the model ranking so that optimising average performance selects the model
-least able to survive the shift. Combined with a 342$\times$ spread in
-inference latency across models of indistinguishable random-split accuracy, the
-numbers the field currently optimises say very little about deployment.
+detection stops working. Transfer between perception sensors is nearly free.
+Transfer across the perception/actuation layer is not: withholding the Modbus
+gateway drops random forest from 0.9988 to 0.5083 balanced accuracy and
+logistic regression to 0.4877, straddling the trivial baseline, and inverts the
+model ranking so that optimising average performance selects the model least
+able to survive the shift. With a 342$\times$ spread in inference latency
+across models of indistinguishable random-split accuracy, the numbers the field
+currently optimises say little about deployment.
 
 Our federated results sharpen the same point from a different direction.
 Non-IID partitioning---the difficulty the federated IIoT literature most often
@@ -1301,13 +1251,11 @@ accuracy. We release tooling for all five.
 
 Three directions follow. \textbf{Cross-network transfer} requires a bridging
 feature space between packet-field and flow-statistical representations, the
-principal open problem for this line of work. \textbf{A second actuation-layer
-device}---Modbus alongside DNP3, BACnet or OPC-UA---would determine whether the
-boundary is a property of the layer or of this capture. \textbf{Auditing other
-corpora}: the failure mode needs only that a dataset concatenate
-separately-parsed sources whose separation correlates with the label, which
-describes much of the benchmark suite. We suspect Edge-IIoTset is
-representative rather than exceptional.
+principal open problem here. \textbf{A second actuation-layer device}---Modbus
+alongside DNP3, BACnet or OPC-UA---would establish whether the boundary belongs
+to the layer or to this capture. \textbf{Auditing other corpora}: the failure
+mode needs only that a dataset concatenate separately-parsed sources whose
+separation tracks the label.
 
 \section*{Data availability}
 
