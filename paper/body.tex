@@ -58,6 +58,7 @@ the label (Figure~\ref{fig:mechanism}).
 
 \begin{wfigure}
 \centering
+\begin{fittable}
 \begin{tikzpicture}[
   font=\small,
   box/.style   ={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=8mm},
@@ -105,6 +106,7 @@ the label (Figure~\ref{fig:mechanism}).
         fit=(c1)(c2)(l1)(l2)] {};
 \end{scope}
 \end{tikzpicture}
+\end{fittable}
 \caption{How file provenance becomes the label. The two captures were parsed in
 separate passes that serialise an absent field differently, and dummy encoding
 turns the two spellings into indicator columns. Since the files partition the
@@ -120,53 +122,48 @@ those features is doing intrusion detection; it is reading a build artifact.
 \subsection{Contributions}
 
 \begin{enumerate}
-\item \textbf{We identify and characterise a label-leakage mechanism in the
-canonical Edge-IIoTset preprocessing recipe}, localise it to placeholder
-serialisation, and quantify it with three independent measures (token purity,
-single-column held-out accuracy, normalised mutual information). Four columns
-reach a separation rate of 1.0000 (Section~\ref{sec:audit}).
+\item \textbf{We identify a label-leakage mechanism in the canonical
+Edge-IIoTset recipe}, localise it to placeholder serialisation, and quantify it
+with token purity, single-column held-out accuracy and normalised mutual
+information. Four columns reach a separation rate of 1.0000
+(Section~\ref{sec:audit}).
 
-\item \textbf{We measure the artifact's contribution to reported performance}
-under 5-fold $\times$ 3-repeat cross-validation. Five of six standard
-classifiers reach exactly $1.0000 \pm 0.0000$ accuracy in every fold and the
-sixth reaches 0.99998; under the corrected protocol the same models span 0.6995
-to 0.9503 macro-F1. A 1D-CNN and a deep MLP,
-evaluated separately on a single stratified split, reach 1.0000 accuracy under
-the same recipe and lose more than 0.21 macro-F1 under correction
-(Section~\ref{sec:worth}).
+\item \textbf{We measure what the artifact is worth.} Under 5-fold $\times$
+3-repeat cross-validation five of six standard classifiers reach exactly
+$1.0000 \pm 0.0000$ accuracy in every fold and the sixth reaches 0.99998; under
+correction the same models span 0.6995 to 0.9503 macro-F1. A 1D-CNN and a deep
+MLP reach 1.0000 on a single stratified split and lose more than 0.21 macro-F1
+under correction (Section~\ref{sec:worth}).
 
 \item \textbf{We show the leak is encoding-agnostic.} One-hot, label, ordinal
-and frequency encoding all yield identical 1.0000 single-column accuracy,
-because each is a bijection on the token set. The exposed population is
-therefore every study that treated these columns as categorical, not only those
-that copied the distributed recipe (Section~\ref{sec:encoding}).
+and frequency encoding all yield identical 1.0000 single-column accuracy, each
+being a bijection on the token set. The exposed population is every study that
+treated these columns as categorical, not only those copying the recipe
+(Section~\ref{sec:encoding}).
 
-\item \textbf{We show the curated subsets cannot support agricultural
-research}, with Modbus effectively absent and device identity stripped, and we
-rebuild the benchmark from the raw captures under uniform parsing
-(Section~\ref{sec:cannot}, Section~\ref{sec:agriedge}).
+\item \textbf{We rebuild the benchmark.} The curated subsets cannot support
+agricultural research---Modbus effectively absent, device identity
+stripped---so we reconstruct from the raw captures under uniform parsing
+(Sections~\ref{sec:cannot} and~\ref{sec:agriedge}).
 
-\item \textbf{We locate the generalisation boundary in agricultural IIoT
-detection.} A leave-one-device-out sweep over all five devices shows that
-transfer between perception sensors is near-free---every model but naive Bayes
-scores 0.9880--0.9999 balanced accuracy when soil moisture, water level or pH
-is withheld, and 0.9106--0.9385 for temperature and humidity---while transfer
-across the perception/actuation layer collapses to 0.4877--0.5083, straddling
-the trivial baseline, for two of the six (Section~\ref{sec:lodo}).
+\item \textbf{We locate the generalisation boundary.} A leave-one-device-out
+sweep over all five devices shows transfer between perception sensors is
+near-free---every model but naive Bayes scores 0.9880--0.9999 balanced accuracy
+when soil moisture, water level or pH is withheld, and 0.9106--0.9385 for
+temperature and humidity---while transfer across the perception/actuation layer
+collapses to 0.4877--0.5083, straddling the trivial baseline, for two of the
+six (Section~\ref{sec:lodo}).
 
-\item \textbf{We show that the federated literature is optimising the wrong
+\item \textbf{We show the federated literature is optimising the wrong
 constraint.} Non-IID partitioning costs at most 0.0037 macro-F1, while training
-a 28{,}450-parameter model over LoRaWAN costs 4.6 hours of uplink
-(Section~\ref{sec:fed}).
-
-\item \textbf{We characterise edge deployment cost}, finding a
-342$\times$ inference-latency spread and a 171$\times$ model-size spread across
-models whose random-split accuracies are indistinguishable
-(Section~\ref{sec:edge}).
+a 28{,}450-parameter model over LoRaWAN costs 4.6 hours of uplink; deployment
+cost varies 342$\times$ in latency and 171$\times$ in model size across models
+whose random-split accuracies are indistinguishable (Sections~\ref{sec:fed}
+and~\ref{sec:edge}).
 
 \item \textbf{We release the complete pipeline}---audit tooling, benchmark
-construction, and experiments---so that the audit can be applied to other
-datasets (Section~\ref{sec:repro}).\footnote{\url{https://github.com/MostafaGalal1/agriedge}}
+construction and experiments---so the audit can be applied to other datasets
+(Section~\ref{sec:repro}).\footnote{\url{https://github.com/MostafaGalal1/agriedge}}
 \end{enumerate}
 
 \section{Background}
@@ -263,24 +260,20 @@ learning-based security, spurious correlation among them.
 This paper sits inside that programme rather than alongside it, and two things
 distinguish its contribution. First, Edge-IIoTset is not among the seven
 datasets Flood et al. examine, and we are not aware of any comparable audit of
-it; the catalogue therefore does not yet cover the dataset that IIoT and
-agricultural work overwhelmingly relies on. Second, the fault sits where the
-catalogue does not look. All six smells locate the problem in the testbed---in
-how traffic was generated, how the simulation was configured, or how ground
-truth was established. Here the captures are sound, the ground truth is
-accurate, and every label is correct; the artifact enters afterwards, in the
-pipeline that serialises the captures into a feature table, because the two
-label classes were parsed in separate passes that disagree about how to spell
-an absent value. It is therefore not \emph{wrong label}, since no label is
-wrong, and not quite \emph{highly dependent features} either: the features
-documented under that heading are genuine network properties---destination
-port, packet size, flow duration---that correlate with the label because of how
-traffic was generated, whereas the token carrying our signal is not a network
-property at all. It is the placeholder written where a protocol field was
-\emph{absent}, and its spelling records which file the row was parsed from. The
-dependency is perfect rather than merely strong, it originates downstream of
-capture rather than in the testbed, and it is invisible to any inspection that
-casts the column to a numeric type before looking at it.
+it. Second, the fault sits where the catalogue does not look. All six smells
+locate the problem in the testbed---in how traffic was generated, configured or
+labelled. Here the captures are sound, the ground truth is accurate and every
+label is correct; the artifact enters downstream, in the pipeline that
+serialises the captures into a feature table, because the two label classes
+were parsed in separate passes that disagree about how to spell an absent
+value. So it is not \emph{wrong label}, since no label is wrong, and not quite
+\emph{highly dependent features} either: the features documented under that
+heading are genuine network properties---destination port, packet size, flow
+duration---whereas the token carrying our signal is the placeholder written
+where a field was \emph{absent}, and its spelling records which file the row
+came from. The dependency is perfect rather than strong, it originates
+downstream of capture, and it is invisible to any inspection that casts the
+column to a numeric type first.
 
 Two results are closer still to ours. Bouke and
 Abdullah~\cite{bouke2023patternleakage} study \emph{pattern leakage} introduced
@@ -324,16 +317,14 @@ physical measurements but can observe, inject, and modify network traffic. We
 assume the detector runs on the edge gateway and that the gateway itself is
 trusted; detection of a compromised gateway is out of scope.
 
-The attack classes in Edge-IIoTset map onto agricultural consequences as
-follows. \textbf{Man-in-the-middle} (ARP and DNS spoofing) permits alteration
-of telemetry in flight---the falsified-moisture scenario. \textbf{Denial of
-service} in its four variants (TCP SYN, UDP, ICMP, HTTP floods) severs the
-telemetry path, preventing irrigation triggers. \textbf{Reconnaissance} (port
-scanning, OS fingerprinting, vulnerability scanning) precedes targeted attacks.
-\textbf{Injection and application attacks} (SQL injection, XSS, file upload)
-target the management interfaces through which farm operators configure
-irrigation schedules. \textbf{Backdoor and ransomware} establish persistence,
-with ransomware against an irrigation controller carrying an unusually
+The attack classes in Edge-IIoTset map onto agricultural consequences directly.
+\textbf{Man-in-the-middle} (ARP and DNS spoofing) alters telemetry in
+flight---the falsified-moisture scenario. \textbf{Denial of service} (TCP SYN,
+UDP, ICMP and HTTP floods) severs the telemetry path, preventing irrigation
+triggers. \textbf{Reconnaissance} precedes targeted attacks, \textbf{injection
+and application attacks} target the interfaces through which operators
+configure irrigation, and \textbf{backdoor and ransomware} establish
+persistence---ransomware against an irrigation controller carrying an unusually
 compressed decision timeline given crop water stress.
 
 Two of these classes are severely under-represented in the dataset---MITM at
@@ -1178,26 +1169,21 @@ boundary'' is inferred from a single instance of that layer. A testbed with
 several distinct fieldbus devices would be needed to confirm that the boundary
 is architectural rather than a peculiarity of this particular Modbus capture.
 
-\paragraph{Cross-dataset generalisation is out of scope, deliberately} The
-natural next question is whether detectors trained on AgriEdge transfer to a
-different IIoT network. We do not answer it here, and the reason is worth
-stating plainly rather than leaving as an unexplained omission. Edge-IIoTset's
-features are Wireshark protocol-field names (\code{tcp.flags},
-\code{mqtt.topic}); most comparable datasets---CIC-IoT-2023, TON\_IoT,
-WUSTL-IIoT-2021---expose flow-statistical features from CICFlowMeter or Argus.
-Direct name-level alignment yields a near-empty intersection, so any
-cross-dataset number would be computed over a handful of coincidentally-shared
-columns and would measure the alignment more than the detector. A defensible
-result requires constructing a bridging feature space, which recent
-work~\cite{bridge2026tchnet} treats as a contribution in its own right. We
-judged that a second paper rather than a section of this one.
-
-We therefore present the LODO sweep as our generalisation evidence, and we are
-explicit about what it does and does not establish. It shows a genuine
-distribution shift \emph{within} one testbed, across an architectural layer,
-with effects large enough to invert model rankings. It does not establish
-behaviour on a different network. Readers should not read Table~\ref{tab:lodo}
-as a substitute for cross-network validation.
+\paragraph{Cross-dataset generalisation is out of scope, deliberately} Whether
+detectors trained on AgriEdge transfer to a different IIoT network is the
+natural next question, and we do not answer it. Edge-IIoTset's features are
+Wireshark protocol-field names (\code{tcp.flags}, \code{mqtt.topic}); most
+comparable datasets---CIC-IoT-2023, TON\_IoT, WUSTL-IIoT-2021---expose
+flow-statistical features from CICFlowMeter or Argus. Name-level alignment
+yields a near-empty intersection, so any cross-dataset number would measure the
+alignment more than the detector. A defensible result requires a bridging
+feature space, which recent work~\cite{bridge2026tchnet} treats as a
+contribution in its own right. We therefore present the LODO sweep as our
+generalisation evidence: it shows a genuine distribution shift \emph{within}
+one testbed, across an architectural layer, large enough to invert model
+rankings. It does not establish behaviour on a different network, and
+Table~\ref{tab:lodo} should not be read as a substitute for cross-network
+validation.
 
 \paragraph{Statistical reporting} The headline protocol comparison
 (Table~\ref{tab:kfold}) is reported over 5-fold $\times$ 3-repeat stratified
@@ -1213,14 +1199,10 @@ descriptive of spread rather than as frequentist guarantees.
 \label{sec:repro}
 
 All code is released under the MIT licence as the \code{agriedge} Python
-package, at \url{https://github.com/MostafaGalal1/agriedge}: \code{audit.leakage}
-(separation rate, single-column accuracy, NMI, provenance probe),
-\code{data.placeholders} (canonicalisation), \code{data.recipes} (both
-protocols), \code{data.agribench} (benchmark construction under uniform
-parsing), \code{federated} (non-IID partitioners and FedAvg), \code{evaluation}
-(metrics, repeated $k$-fold, edge cost, cross-domain alignment), and
-\code{models} (classical suite and deep baselines). Nine experiment scripts
-each write their own result tables.
+package, at \url{https://github.com/MostafaGalal1/agriedge}, with the audit,
+both preprocessing protocols, benchmark construction, the federated simulation
+and the model suite as separate modules, and nine experiment scripts that each
+write their own result tables.
 
 All randomness is seeded. Every experiment reported here ran on a 12-core Apple
 M4~Pro with 25~GB of memory; the deep baselines used the integrated GPU through
@@ -1260,27 +1242,6 @@ reading every field as text so that no type inference can mask the difference:
 python scripts/verify_placeholder_split.py \
        ML-EdgeIIoT-dataset.csv
 \end{verbatim}
-
-The audit reduces to a single call for readers who wish to check their own
-pipelines:
-
-% Kept within ~36 columns so it sets cleanly in an IEEE two-column measure as
-% well as at full width.
-{\footnotesize
-\begin{verbatim}
-from agriedge.audit.leakage import (
-    audit_columns,
-    summarize,
-)
-
-reports = audit_columns(
-    frame,
-    categorical_columns,
-    label_column="Attack_label",
-)
-print(summarize(reports))
-\end{verbatim}
-}
 
 \section{Conclusion}
 
@@ -1338,20 +1299,15 @@ accuracy. We release tooling for all five.
 
 \subsection{Future work}
 
-Three directions follow directly. \textbf{Cross-network transfer}: establishing
-whether detectors trained on AgriEdge survive a genuinely different network
-requires a bridging feature space between packet-field and flow-statistical
-representations, which is the principal open problem for this line of work.
-\textbf{A second actuation-layer device}: our central generalisation finding
-rests on a single fieldbus device; a testbed carrying several distinct
-actuation protocols (Modbus alongside DNP3, BACnet, or OPC-UA) would determine
-whether the boundary is a property of the layer or of this particular capture.
-\textbf{Auditing other security datasets}: the failure mode requires only that
-a dataset be assembled by concatenating separately-parsed sources whose
-separation correlates with the label, which describes a large fraction of
-intrusion-detection corpora. Applying the audit released here across the
-standard benchmark suite would establish whether Edge-IIoTset is exceptional or
-representative. We suspect the latter.
+Three directions follow. \textbf{Cross-network transfer} requires a bridging
+feature space between packet-field and flow-statistical representations, the
+principal open problem for this line of work. \textbf{A second actuation-layer
+device}---Modbus alongside DNP3, BACnet or OPC-UA---would determine whether the
+boundary is a property of the layer or of this capture. \textbf{Auditing other
+corpora}: the failure mode needs only that a dataset concatenate
+separately-parsed sources whose separation correlates with the label, which
+describes much of the benchmark suite. We suspect Edge-IIoTset is
+representative rather than exceptional.
 
 \section*{Data availability}
 
