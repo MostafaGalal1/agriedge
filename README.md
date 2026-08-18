@@ -1,5 +1,6 @@
 # AgriEdge
 
+[![arXiv](https://img.shields.io/badge/arXiv-2608.15761-b31b1b)](https://arxiv.org/abs/2608.15761)
 [![Code DOI](https://img.shields.io/badge/Code%20DOI-10.5281%2Fzenodo.21941210-1682D4)](https://doi.org/10.5281/zenodo.21941210)
 [![Dataset DOI](https://img.shields.io/badge/Dataset%20DOI-10.5281%2Fzenodo.21941319-1682D4)](https://doi.org/10.5281/zenodo.21941319)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -9,7 +10,9 @@ Edge-IIoTset dataset.
 
 This repository accompanies the paper *"Provenance, Not Behaviour: A
 Serialisation Artifact in Edge-IIoTset and a Leakage-Free Benchmark for
-Precision-Agriculture Intrusion Detection"* (`paper/manuscript.pdf`).
+Precision-Agriculture Intrusion Detection"*
+([arXiv:2608.15761](https://arxiv.org/abs/2608.15761); built locally as
+`paper/manuscript.pdf`).
 
 ## The short version
 
@@ -169,15 +172,22 @@ local copy.
 
 ## Citing this work
 
-Two DOIs, both resolving to the newest version:
+Cite the paper as a preprint:
+
+> Galal, M. M. (2026). *Provenance, Not Behaviour: A Serialisation Artifact in
+> Edge-IIoTset and a Leakage-Free Benchmark for Precision-Agriculture Intrusion
+> Detection.* arXiv:2608.15761. https://doi.org/10.48550/arXiv.2608.15761
+
+Two artifact DOIs, both resolving to the newest version:
 
 | | DOI |
 |---|---|
 | Code | `10.5281/zenodo.21941210` |
 | Benchmark | `10.5281/zenodo.21941319` |
 
-To pin exact releases instead, use `10.5281/zenodo.21941211` (code v1.0.0) and
-`10.5281/zenodo.21941320` (benchmark v1.0.0).
+To pin exact releases instead, use `10.5281/zenodo.21960887` (code v1.0.1) or
+`10.5281/zenodo.21941211` (code v1.0.0), and `10.5281/zenodo.21941320`
+(benchmark v1.0.0).
 
 GitHub renders a formatted citation from [`CITATION.cff`](CITATION.cff) under
 *Cite this repository* in the sidebar.

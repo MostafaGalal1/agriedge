@@ -13,8 +13,14 @@ date-released: "2026-08-16"
 doi: "10.5281/zenodo.21941210"
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.21960887"
+    description: "Archived snapshot of version 1.0.1"
+  - type: doi
     value: "10.5281/zenodo.21941211"
     description: "Archived snapshot of version 1.0.0"
+  - type: other
+    value: "arXiv:2608.15761"
+    description: "Preprint of the accompanying paper"
 license: MIT
 repository-code: "https://github.com/MostafaGalal1/agriedge"
 keywords:
@@ -34,3 +40,7 @@ preferred-citation:
       family-names: "Galal"
       affiliation: "Department of Computer and Systems Engineering, Alexandria University"
   year: 2026
+  month: 8
+  journal: "arXiv"
+  doi: "10.48550/arXiv.2608.15761"
+  url: "https://arxiv.org/abs/2608.15761"
