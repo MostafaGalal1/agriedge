@@ -55,48 +55,55 @@ the label (Figure~\ref{fig:mechanism}).
 \begin{fittable}
 \begin{tikzpicture}[
   font=\small,
-  box/.style   ={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=8mm},
-  capnode/.style   ={box, fill=black!4},
-  parse/.style ={box, fill=black!8, font=\small\itshape},
-  tok/.style   ={box, font=\small\ttfamily},
-  outnode/.style   ={box, minimum width=26mm},
-  flow/.style  ={-{Stealth[length=2mm]}, thin},
+  box/.style    ={draw, rounded corners=2pt, align=center, inner sep=3pt,
+                  minimum height=5.5mm},
+  capnode/.style={box, fill=black!4, minimum width=24mm},
+  parse/.style  ={box, fill=black!8, font=\small\itshape,
+                  minimum width=19mm},
+  tok/.style    ={box, font=\small\ttfamily, minimum width=11mm},
+  outnode/.style={box, minimum width=20mm},
+  flow/.style   ={-{Stealth[length=1.8mm]}, thin},
 ]
-% two capture branches, parsed independently
-\node[capnode]   (ncap) {normal-traffic\\captures};
-\node[capnode, below=7mm of ncap] (acap) {attack\\captures};
+% Upper band: the two captures go through separate parse passes, and the two
+% passes disagree on how to spell the placeholder for an absent field.
+\node[capnode]                    (ncap) {normal-traffic\\captures};
+\node[capnode, below=4mm of ncap] (acap) {attack\\captures};
+\node[parse, right=4mm of ncap]   (npar) {parse pass};
+\node[parse, right=4mm of acap]   (apar) {parse pass};
+\node[tok, right=4mm of npar]     (ntok) {0};
+\node[tok, right=4mm of apar]     (atok) {0.0};
+\draw[flow] (ncap) -- (npar);   \draw[flow] (npar) -- (ntok);
+\draw[flow] (acap) -- (apar);   \draw[flow] (apar) -- (atok);
 
-\node[parse, right=7mm of ncap] (npar) {parse pass};
-\node[parse, right=7mm of acap] (apar) {parse pass};
-
-\node[tok, right=7mm of npar] (ntok) {0};
-\node[tok, right=7mm of apar] (atok) {0.0};
-
-\draw[flow] (ncap) -- (npar);   \draw[flow] (acap) -- (apar);
-\draw[flow] (npar) -- (ntok);   \draw[flow] (apar) -- (atok);
-
-% concatenation
-\coordinate (mid) at ($(ntok)!0.5!(atok)$);
-\node[box, right=9mm of mid, fill=black!4] (cat) {concatenate};
-\draw[flow] (ntok) -- (cat);
-\draw[flow] (atok) -- (cat);
-
-\node[box, right=7mm of cat, font=\small\ttfamily] (enc) {get\_dummies};
+% Lower band: concatenation merges the branches, dummy encoding turns the two
+% spellings into two indicator columns, and each column is already the label.
+\node[box, fill=black!4, below=6mm of acap.south west, anchor=north west]
+  (cat) {concatenate};
+\node[box, font=\small\ttfamily, right=4mm of cat] (enc) {get\_dummies};
 \draw[flow] (cat) -- (enc);
 
-% the two indicator columns, and what they are
-\node[outnode, right=9mm of enc, yshift=5mm]  (c1) {\texttt{col\_0} $=1$};
-\node[outnode, right=9mm of enc, yshift=-5mm] (c2) {\texttt{col\_0.0} $=1$};
-\draw[flow] (enc) -- (c1);
-\draw[flow] (enc) -- (c2);
+% Both spellings leave to the right, drop down a shared bus and enter the same
+% concatenation, so the merge is visibly the point where the two branches meet.
+\coordinate (busx) at ($(atok.east)+(3mm,0)$);
+\coordinate (bus)  at ($(cat.north)+(0,4mm)$);
+\draw (ntok.east) -- (ntok.east -| busx);
+\draw (atok.east) -- (atok.east -| busx);
+\draw (ntok.east -| busx) -- (bus -| busx) -- (bus);
+\draw[flow] (bus) -- (cat.north);
 
-\node[right=3mm of c1, font=\small\bfseries] (l1) {normal};
-\node[right=3mm of c2, font=\small\bfseries] (l2) {attack};
-\draw[flow] (c1) -- (l1);
-\draw[flow] (c2) -- (l2);
+% The two indicator columns sit clear of the bus, and each one is the label.
+\node[outnode, anchor=west] (c1) at ($(busx |- enc)+(5mm,4mm)$)
+  {\texttt{col\_0}$\,{=}\,1$};
+\node[outnode, anchor=west] (c2) at ($(busx |- enc)+(5mm,-4mm)$)
+  {\texttt{col\_0.0}$\,{=}\,1$};
+\draw[flow] (enc) -- (c1);   \draw[flow] (enc) -- (c2);
+
+\node[right=2.5mm of c1, font=\small\bfseries] (l1) {normal};
+\node[right=2.5mm of c2, font=\small\bfseries] (l2) {attack};
+\draw[flow] (c1) -- (l1);    \draw[flow] (c2) -- (l2);
 
 \begin{scope}[on background layer]
-  \node[draw, dashed, rounded corners=3pt, inner sep=5pt,
+  \node[draw, dashed, rounded corners=3pt, inner sep=3pt,
         fit=(c1)(c2)(l1)(l2)] {};
 \end{scope}
 \end{tikzpicture}
@@ -454,6 +461,7 @@ distributed recipe, on the ML subset (157{,}800 rows; 24{,}301 normal,
 \caption{Leakage audit of the columns \code{Readme.txt} Step~5 instructs
 researchers to dummy-encode (ML subset).}
 \label{tab:audit-ml}
+\setlength{\tabcolsep}{2.5pt}
 \begin{fittable}
 \begin{tabular}{lrrrrrrc}
 \toprule
@@ -570,7 +578,7 @@ four would conceal that.}
 \begin{fittable}
 \begin{tabular}{lcccc r}
 \toprule
-Model & Accuracy (A) & Accuracy (B) & Macro-F1 (A) & Macro-F1 (B) & $\Delta$F1 \\
+Model & \makecell{Accuracy\\(A)} & \makecell{Accuracy\\(B)} & \makecell{Macro-F1\\(A)} & \makecell{Macro-F1\\(B)} & $\Delta$F1 \\
 \midrule
 Hist.\ gradient boosting & $\mathbf{1.0000 \pm 0.0000}$ & $0.9752 \pm 0.0005$ & $\mathbf{1.0000 \pm 0.0000}$ & $\mathbf{0.9503 \pm 0.0011}$ & 0.0497 \\
 Random forest            & $\mathbf{1.0000 \pm 0.0000}$ & $0.9658 \pm 0.0005$ & $\mathbf{1.0000 \pm 0.0000}$ & $0.9343 \pm 0.0009$ & 0.0657 \\
@@ -630,7 +638,7 @@ is the smaller \mbox{(64, 32)} estimator from the classical suite.
 \begin{fittable}
 \begin{tabular}{lrrrrr}
 \toprule
-Architecture & Accuracy (A) & Accuracy (B) & Macro-F1 (A) & Macro-F1 (B) & $\Delta$F1 \\
+Architecture & \makecell{Accuracy\\(A)} & \makecell{Accuracy\\(B)} & \makecell{Macro-F1\\(A)} & \makecell{Macro-F1\\(B)} & $\Delta$F1 \\
 \midrule
 1D-CNN & \textbf{1.0000} & 0.9003 & \textbf{1.0000} & 0.7598 & 0.2402 \\
 MLP    & \textbf{1.0000} & 0.9093 & 0.9999 & 0.7848 & 0.2151 \\
@@ -659,7 +667,7 @@ After cleaning, 1{,}909{,}671 rows remain; the corrected protocol rewrote
 \begin{fittable}
 \begin{tabular}{lrrrrr}
 \toprule
-Model & Accuracy (A) & Accuracy (B) & Macro-F1 (A) & Macro-F1 (B) & $\Delta$F1 \\
+Model & \makecell{Accuracy\\(A)} & \makecell{Accuracy\\(B)} & \makecell{Macro-F1\\(A)} & \makecell{Macro-F1\\(B)} & $\Delta$F1 \\
 \midrule
 Hist.\ gradient boosting & \textbf{1.0000} & \textbf{0.9694} & \textbf{1.0000} & \textbf{0.9612} & 0.0388 \\
 Random forest            & \textbf{1.0000} & 0.9596 & \textbf{1.0000} & 0.9499 & 0.0501 \\
@@ -793,7 +801,7 @@ The comparison with Table~\ref{tab:audit-ml} is the validation of the method.
 \begin{fittable}
 \begin{tabular}{lrrrc}
 \toprule
-Column & Separation rate & 1-col.\ accuracy & NMI & Provenance marker \\
+Column & \makecell{Separation\\rate} & \makecell{1-col.\\accuracy} & NMI & \makecell{Provenance\\marker} \\
 \midrule
 \code{http.request.version} & 0.0288 & 0.6179 & 0.0641 & no \\
 \code{http.request.method}  & 0.0288 & 0.6179 & 0.0643 & no \\
@@ -823,7 +831,7 @@ the same data under a conventional random stratified split.
 \begin{wtable}
 \centering
 \footnotesize
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3pt}
 \caption{Balanced accuracy under leave-one-device-out, every device withheld in
 turn.}
 \label{tab:lodo}
@@ -982,8 +990,8 @@ repeats).}
 \begin{fittable}
 \begin{tabular}{lrrrrr}
 \toprule
-Model & Size (KiB) & Parameters & \makecell{Median\\latency ($\mu$s)} &
-\makecell{p95\\latency ($\mu$s)} & Throughput (/s) \\
+Model & \makecell{Size\\(KiB)} & \makecell{Para-\\meters} & \makecell{Median\\latency ($\mu$s)} &
+\makecell{p95\\latency ($\mu$s)} & \makecell{Through-\\put (/s)} \\
 \midrule
 Decision tree            & \textbf{20.9}       & 109       & \textbf{40.1}     & \textbf{52.1} & \textbf{24{,}935} \\
 Logistic regression      & 25.1                & 410       & 108.9             & 123.3 & 9{,}183 \\

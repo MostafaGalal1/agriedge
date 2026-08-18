@@ -16,11 +16,10 @@ spelling of the placeholder written for an absent protocol field: the string
 \code{0} in the normal-traffic branch of the dataset build against \code{0.0}
 in the attack branch. The label is recoverable from a serialisation artifact
 encoding file provenance, with no network behaviour modelled, and separates
-every row of both curated subsets. Under 5-fold $\times$ 3-repeat
-cross-validation, five of six standard classifiers attain exactly $1.0000 \pm
-0.0000$ accuracy and the sixth attains 0.99998. Under a corrected protocol,
+every row of both curated subsets. Under 5-fold \by{} 3-repeat
+cross-validation, five of six standard classifiers attain exactly \pmv{1.0000}{0.0000} accuracy and the sixth attains 0.99998. Under a corrected protocol,
 naive Bayes falls by 0.3005 macro-F1 and the strongest model settles at
-$0.9503 \pm 0.0011$. Label, ordinal and frequency encoding leak identically.
+\pmv{0.9503}{0.0011}. Label, ordinal and frequency encoding leak identically.
 Because the curated subsets also lack Modbus and per-device identity, we
 rebuild the benchmark from the raw captures under uniform parsing, producing
 \textbf{AgriEdge}: 1{,}276{,}122 rows, five devices with full attribution, and

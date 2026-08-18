@@ -27,8 +27,13 @@
 % \linewidth rather than \textwidth is what makes this work in both layouts:
 % inside a full-width float it resolves to the text width, inside a
 % single-column float to the column width.
+% The scale cap is what makes the tables coherent. Without it adjustbox shrinks
+% each table by whatever factor that table alone needs, so a wide one renders at
+% 6.1pt beside a narrow one at 8pt. Scaling everything by 0.85 first and only
+% then fitting to the column means every table lands at one size, and the widest
+% table is what sets that size.
 \newenvironment{fittable}
-  {\begin{adjustbox}{max width=\linewidth}}
+  {\begin{adjustbox}{scale=0.85, max width=\linewidth}}
   {\end{adjustbox}}
 
 % Numeric tables are dense; buy back horizontal room before any scaling.
@@ -43,7 +48,23 @@
 % Note the deliberate absence of hyphenation inside \code: this paper's
 % argument turns on exact token spellings, and a break-hyphen inserted into
 % mqtt.protoname would be indistinguishable from part of the identifier.
-\newcommand{\code}[1]{\texttt{\small #1}}
+%% Courier runs wide beside Times, so code spans are set a little smaller than
+%% their surroundings. \small is an absolute size, which inside a \footnotesize
+%% table renders code LARGER than the table text and inflates the column it sits
+%% in; scaling off \f@size keeps the reduction relative wherever it appears.
+\makeatletter
+\newcommand{\code}[1]{{\ttfamily
+  \@tempdima=\f@size pt \@tempdima=0.92\@tempdima
+  \fontsize{\@tempdima}{1.2\@tempdima}\selectfont #1}}
+\makeatother
+
+%% IEEEtran sets the journal abstract in \bfseries, but math mode does not
+%% inherit the font series, so a value written as $1.0000 \pm 0.0000$ prints in
+%% the regular weight beside bold text. These two set the symbols in text mode
+%% instead, so a mean-and-deviation reads in whatever weight surrounds it under
+%% both classes.
+\newcommand{\pmv}[2]{#1\,\textpm\,#2}
+\newcommand{\by}{\texttimes}
 
 % Long dotted identifiers are unbreakable words, so a few lines cannot be set
 % at natural spacing. Let TeX loosen interword space as a last resort rather
